@@ -1,0 +1,2746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IELTS 19 Academic Writing Test 1 - Official Examination UI & Automated Grading Engine</title>
+  <style>
+    /* -------------------------------------------------------------
+       ACADEMIC TYPOGRAPHY & COLOR SYSTEM
+       Primary Font: Times New Roman throughout
+       Theme: Cambridge / Oxford Academic Navy, Deep Crimson & Alabaster
+    -------------------------------------------------------------- */
+    :root {
+      --font-academic: 'Times New Roman', Times, 'Nimbus Roman No9 L', serif;
+      --navy-primary: #0f2b48;
+      --navy-dark: #091c30;
+      --navy-light: #1b4974;
+      --navy-subtle: #f0f4f9;
+      --crimson-accent: #8c1d40;
+      --crimson-light: #fff0f3;
+      --gold-academic: #b8860b;
+      --green-academic: #166534;
+      --green-light: #edfbf2;
+      --amber-academic: #b45309;
+      --amber-light: #fffbeb;
+      --text-main: #1a1a1a;
+      --text-muted: #4a5568;
+      --border-color: #cbd5e1;
+      --border-dark: #64748b;
+      --bg-page: #f8fafc;
+      --bg-card: #ffffff;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-academic);
+      color: var(--text-main);
+      background-color: var(--bg-page);
+      line-height: 1.6;
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* -------------------------------------------------------------
+       HEADER & NAVIGATION
+    -------------------------------------------------------------- */
+    header.exam-header {
+      background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy-primary) 100%);
+      color: #ffffff;
+      padding: 18px 30px;
+      border-bottom: 4px solid var(--crimson-accent);
+      box-shadow: var(--shadow-md);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .academic-crest {
+      width: 48px;
+      height: 48px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 2px solid rgba(255, 255, 255, 0.35);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: bold;
+      color: #ffffff;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
+    }
+
+    .brand-title h1 {
+      font-size: 24px;
+      letter-spacing: 0.5px;
+      font-weight: bold;
+      text-transform: uppercase;
+      margin: 0;
+      color: #ffffff;
+    }
+
+    .brand-title p {
+      font-size: 13px;
+      color: #cbd5e1;
+      letter-spacing: 0.3px;
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    /* Timer Widget */
+    .timer-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 8px 16px;
+      border-radius: 6px;
+    }
+
+    .timer-display {
+      font-size: 22px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      color: #ffffff;
+      min-width: 75px;
+      text-align: center;
+    }
+
+    .timer-warning {
+      color: #fbbf24 !important;
+      animation: pulse 1.5s infinite;
+    }
+
+    .timer-danger {
+      color: #f87171 !important;
+      animation: pulse 0.8s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    .timer-btn {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #ffffff;
+      font-family: var(--font-academic);
+      font-size: 13px;
+      padding: 4px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .timer-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Action Buttons in Header */
+    .btn-submit-main {
+      background: linear-gradient(135deg, #a31c44 0%, #8c1d40 100%);
+      color: #ffffff;
+      border: 1px solid #ffd1dc;
+      font-family: var(--font-academic);
+      font-weight: bold;
+      font-size: 15px;
+      padding: 10px 22px;
+      border-radius: 5px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+      transition: all 0.2s;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-submit-main:hover {
+      background: #701432;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.35);
+      transform: translateY(-1px);
+    }
+
+    /* -------------------------------------------------------------
+       METADATA & QUICK CONTROLS BAR
+    -------------------------------------------------------------- */
+    .meta-bar {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border-color);
+      padding: 12px 30px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .meta-bar-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .candidate-fields {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .field-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .field-item label {
+      font-weight: bold;
+      color: var(--navy-primary);
+    }
+
+    .field-item input {
+      font-family: var(--font-academic);
+      font-size: 14px;
+      padding: 4px 8px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      background: #fdfdfd;
+      color: var(--text-main);
+    }
+
+    .quick-preset-btns {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn-preset {
+      font-family: var(--font-academic);
+      font-size: 13px;
+      padding: 5px 12px;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+      background: #f8fafc;
+      color: var(--navy-primary);
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.15s;
+    }
+
+    .btn-preset:hover {
+      background: var(--navy-primary);
+      color: #ffffff;
+      border-color: var(--navy-primary);
+    }
+
+    /* -------------------------------------------------------------
+       MAIN CONTAINER & LAYOUT
+    -------------------------------------------------------------- */
+    main.exam-container {
+      max-width: 1400px;
+      margin: 25px auto;
+      padding: 0 20px;
+    }
+
+    /* Task Navigation Tabs */
+    .tab-navigation {
+      display: flex;
+      gap: 4px;
+      border-bottom: 2px solid var(--navy-primary);
+      margin-bottom: 25px;
+    }
+
+    .tab-button {
+      font-family: var(--font-academic);
+      font-size: 16px;
+      font-weight: bold;
+      padding: 12px 24px;
+      border: 1px solid var(--border-color);
+      border-bottom: none;
+      background: #e2e8f0;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: 6px 6px 0 0;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .tab-button.active {
+      background: #ffffff;
+      color: var(--navy-primary);
+      border-top: 3px solid var(--crimson-accent);
+      border-left: 2px solid var(--navy-primary);
+      border-right: 2px solid var(--navy-primary);
+      position: relative;
+      bottom: -2px;
+      border-bottom: 2px solid #ffffff;
+    }
+
+    .tab-button .badge-count {
+      font-size: 12px;
+      padding: 2px 7px;
+      border-radius: 10px;
+      background: #cbd5e1;
+      color: #1e293b;
+      font-weight: normal;
+    }
+
+    .tab-button.active .badge-count {
+      background: var(--navy-subtle);
+      color: var(--navy-primary);
+      font-weight: bold;
+    }
+
+    /* Tab Content Panes */
+    .tab-pane {
+      display: none;
+    }
+
+    .tab-pane.active {
+      display: block;
+    }
+
+    /* Two-column exam grid */
+    .exam-split-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 25px;
+      align-items: start;
+    }
+
+    @media (max-width: 992px) {
+      .exam-split-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Academic Cards */
+    .academic-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      margin-bottom: 25px;
+    }
+
+    .card-header-academic {
+      background: var(--navy-subtle);
+      border-bottom: 2px solid var(--border-color);
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .card-header-academic h2, 
+    .card-header-academic h3 {
+      font-size: 18px;
+      color: var(--navy-primary);
+      font-weight: bold;
+      letter-spacing: 0.3px;
+    }
+
+    .card-header-academic .badge-tag {
+      font-size: 12px;
+      padding: 3px 9px;
+      border-radius: 4px;
+      background: var(--navy-primary);
+      color: #ffffff;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .card-body-academic {
+      padding: 20px;
+    }
+
+    /* Official IELTS Prompt Box */
+    .prompt-box {
+      border: 2px solid var(--border-dark);
+      background: #ffffff;
+      padding: 18px 22px;
+      margin-bottom: 20px;
+      position: relative;
+      box-shadow: inset 0 0 4px rgba(0,0,0,0.05);
+    }
+
+    .prompt-box p {
+      font-style: italic;
+      font-size: 16px;
+      line-height: 1.5;
+      margin-bottom: 12px;
+      color: #111827;
+    }
+
+    .prompt-box p:last-child {
+      margin-bottom: 0;
+    }
+
+    .prompt-instruction-bar {
+      font-weight: bold;
+      font-size: 14px;
+      color: var(--crimson-accent);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* -------------------------------------------------------------
+       TASK 1 VISUALS: INTERACTIVE SVG CHART & ACADEMIC DATA TABLE
+    -------------------------------------------------------------- */
+    .chart-container-box {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 15px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .chart-header {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .chart-header h4 {
+      font-size: 18px;
+      color: var(--navy-primary);
+      font-weight: bold;
+    }
+
+    .chart-header p {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    .svg-wrapper {
+      position: relative;
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    svg.ielts-line-graph {
+      display: block;
+      margin: 0 auto;
+      background: #fafafa;
+      border: 1px solid #e2e8f0;
+      border-radius: 4px;
+    }
+
+    /* Custom SVG styling */
+    .axis-line { stroke: #333333; stroke-width: 2; }
+    .grid-line { stroke: #e2e8f0; stroke-width: 1; stroke-dasharray: 4,4; }
+    .axis-text { font-family: 'Times New Roman', serif; font-size: 13px; fill: #111827; }
+    .axis-title { font-family: 'Times New Roman', serif; font-size: 14px; font-weight: bold; fill: #0f2b48; }
+
+    /* Interactive tooltip */
+    #chart-tooltip {
+      position: absolute;
+      display: none;
+      background: rgba(15, 43, 72, 0.95);
+      color: #ffffff;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-family: var(--font-academic);
+      pointer-events: none;
+      box-shadow: var(--shadow-md);
+      z-index: 50;
+      line-height: 1.3;
+    }
+
+    /* Data Points interactive styles */
+    .graph-point {
+      cursor: pointer;
+      transition: r 0.2s, stroke-width 0.2s;
+    }
+    .graph-point:hover {
+      r: 7;
+      stroke-width: 3;
+    }
+
+    /* Academic Data Table */
+    .academic-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 15px 0 20px 0;
+      font-size: 14px;
+      background: #ffffff;
+    }
+
+    .academic-table th {
+      background: var(--navy-subtle);
+      color: var(--navy-primary);
+      font-weight: bold;
+      text-align: center;
+      padding: 9px 10px;
+      border-top: 2px solid var(--navy-primary);
+      border-bottom: 2px solid var(--navy-primary);
+    }
+
+    .academic-table th:first-child {
+      text-align: left;
+    }
+
+    .academic-table td {
+      padding: 8px 10px;
+      text-align: center;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .academic-table td:first-child {
+      text-align: left;
+      font-weight: 600;
+    }
+
+    .academic-table tr:last-child td {
+      border-bottom: 2px solid var(--navy-primary);
+    }
+
+    .academic-table tr:hover {
+      background-color: #f8fafc;
+    }
+
+    .legend-indicator {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      margin-right: 6px;
+      vertical-align: middle;
+      border-radius: 2px;
+    }
+
+    /* Toggle Image Section */
+    .toggle-section {
+      margin-top: 15px;
+      border-top: 1px dashed var(--border-color);
+      padding-top: 12px;
+    }
+
+    .toggle-link {
+      color: var(--navy-primary);
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+      text-decoration: underline;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .image-preview-panel {
+      display: none;
+      margin-top: 12px;
+      text-align: center;
+      background: #f1f5f9;
+      padding: 10px;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+    }
+
+    .image-preview-panel img {
+      max-width: 100%;
+      height: auto;
+      border: 1px solid #94a3b8;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* -------------------------------------------------------------
+       WRITING ANSWER SHEET & LIVE WORD TRACKER
+    -------------------------------------------------------------- */
+    .answer-sheet-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .sheet-meta-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .word-counter-panel {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+    }
+
+    .counter-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .counter-val {
+      font-weight: bold;
+      font-size: 16px;
+      color: var(--navy-primary);
+    }
+
+    .word-badge {
+      font-size: 12px;
+      font-weight: bold;
+      padding: 3px 9px;
+      border-radius: 12px;
+    }
+
+    .badge-under {
+      background: var(--crimson-light);
+      color: var(--crimson-accent);
+      border: 1px solid #fecdd3;
+    }
+
+    .badge-ok {
+      background: var(--green-light);
+      color: var(--green-academic);
+      border: 1px solid #bbf7d0;
+    }
+
+    .badge-warn {
+      background: var(--amber-light);
+      color: var(--amber-academic);
+      border: 1px solid #fef3c7;
+    }
+
+    .writing-textarea {
+      width: 100%;
+      height: 480px;
+      font-family: var(--font-academic);
+      font-size: 16px;
+      line-height: 1.7;
+      padding: 18px 20px;
+      border: 2px solid var(--border-color);
+      border-radius: 4px;
+      background: #ffffff;
+      color: #111827;
+      resize: vertical;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .writing-textarea:focus {
+      outline: none;
+      border-color: var(--navy-primary);
+      box-shadow: 0 0 0 3px rgba(15, 43, 72, 0.15);
+    }
+
+    .writing-guide-tip {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-style: italic;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* -------------------------------------------------------------
+       DIAGNOSTIC & GRADING REPORT SECTION
+    -------------------------------------------------------------- */
+    #grading-report-section {
+      display: none; /* revealed on submission */
+      margin-top: 40px;
+      scroll-margin-top: 90px;
+    }
+
+    .report-hero-card {
+      background: #ffffff;
+      border: 2px solid var(--navy-primary);
+      border-radius: 8px;
+      box-shadow: var(--shadow-lg);
+      padding: 30px;
+      margin-bottom: 30px;
+      position: relative;
+    }
+
+    .report-hero-header {
+      text-align: center;
+      border-bottom: 2px solid var(--crimson-accent);
+      padding-bottom: 20px;
+      margin-bottom: 25px;
+    }
+
+    .report-hero-header h2 {
+      font-size: 28px;
+      color: var(--navy-primary);
+      font-weight: bold;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .report-hero-header p {
+      font-size: 15px;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    /* Score summary badges row */
+    .band-summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.3fr 1fr;
+      gap: 20px;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    @media (max-width: 768px) {
+      .band-summary-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .score-summary-card {
+      background: var(--navy-subtle);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 18px;
+      text-align: center;
+    }
+
+    .score-summary-card.overall-card {
+      background: linear-gradient(135deg, #f0f4f9 0%, #e2e8f0 100%);
+      border: 2px solid var(--crimson-accent);
+      transform: scale(1.03);
+    }
+
+    .score-summary-card h3 {
+      font-size: 14px;
+      color: var(--navy-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .score-big-number {
+      font-size: 46px;
+      font-weight: bold;
+      color: var(--navy-primary);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .score-summary-card.overall-card .score-big-number {
+      color: var(--crimson-accent);
+      font-size: 54px;
+    }
+
+    .score-weight-note {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    /* Download action banner */
+    .download-cta-banner {
+      background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy-primary) 100%);
+      color: #ffffff;
+      padding: 20px 25px;
+      border-radius: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 30px;
+      border-left: 6px solid var(--gold-academic);
+    }
+
+    .download-cta-text h3 {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 4px;
+      color: #ffffff;
+    }
+
+    .download-cta-text p {
+      font-size: 14px;
+      color: #cbd5e1;
+    }
+
+    .download-buttons-group {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn-download-docx {
+      background: #ffffff;
+      color: var(--navy-primary);
+      border: 1px solid #ffffff;
+      font-family: var(--font-academic);
+      font-size: 15px;
+      font-weight: bold;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s;
+    }
+
+    .btn-download-docx:hover {
+      background: #f1f5f9;
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-download-doc {
+      background: rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      font-family: var(--font-academic);
+      font-size: 14px;
+      font-weight: 600;
+      padding: 10px 18px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-download-doc:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .btn-print-report {
+      background: transparent;
+      color: #cbd5e1;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      font-family: var(--font-academic);
+      font-size: 14px;
+      padding: 10px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-print-report:hover {
+      color: #ffffff;
+      border-color: #ffffff;
+    }
+
+    /* Section breakdown cards */
+    .diagnostic-breakdown-card {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      margin-bottom: 25px;
+      overflow: hidden;
+    }
+
+    .diagnostic-header {
+      background: var(--navy-subtle);
+      border-bottom: 2px solid var(--border-color);
+      padding: 14px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .diagnostic-header h3 {
+      font-size: 19px;
+      color: var(--navy-primary);
+      font-weight: bold;
+    }
+
+    .diagnostic-body {
+      padding: 22px;
+    }
+
+    /* Strengths, Weaknesses, Improvements Lists */
+    .analysis-block {
+      margin-bottom: 20px;
+    }
+
+    .analysis-block-title {
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .title-strengths { color: var(--green-academic); }
+    .title-weaknesses { color: var(--crimson-accent); }
+    .title-improvements { color: var(--navy-primary); }
+
+    .analysis-list {
+      list-style-type: none;
+      padding-left: 0;
+    }
+
+    .analysis-list li {
+      position: relative;
+      padding-left: 24px;
+      margin-bottom: 8px;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .analysis-list.strengths-list li::before {
+      content: '✔';
+      position: absolute;
+      left: 0;
+      color: var(--green-academic);
+      font-weight: bold;
+    }
+
+    .analysis-list.weaknesses-list li::before {
+      content: '✖';
+      position: absolute;
+      left: 0;
+      color: var(--crimson-accent);
+      font-weight: bold;
+    }
+
+    .analysis-list.improvements-list li::before {
+      content: '➔';
+      position: absolute;
+      left: 0;
+      color: var(--navy-primary);
+      font-weight: bold;
+    }
+
+    /* Cambridge 19 Examiner Comparison Callout Box */
+    .cambridge-examiner-callout {
+      border: 1px solid #cbd5e1;
+      border-left: 5px solid var(--crimson-accent);
+      background: #fdf2f4;
+      padding: 16px 20px;
+      margin-top: 20px;
+      border-radius: 0 4px 4px 0;
+    }
+
+    .callout-title {
+      font-size: 15px;
+      font-weight: bold;
+      color: var(--crimson-accent);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .callout-body {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #333333;
+      font-style: italic;
+    }
+
+    /* Model Exemplar Essay Box */
+    .model-essay-box {
+      border: 1px solid var(--border-color);
+      border-left: 5px solid var(--navy-primary);
+      background: #f8fafc;
+      padding: 16px 20px;
+      margin-top: 20px;
+      border-radius: 0 4px 4px 0;
+    }
+
+    .model-title {
+      font-size: 15px;
+      font-weight: bold;
+      color: var(--navy-primary);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .model-content {
+      font-size: 14.5px;
+      line-height: 1.65;
+      color: #1a1a1a;
+      white-space: pre-line;
+    }
+
+    /* -------------------------------------------------------------
+       PRINT STYLES FOR WORD / PDF EXPORT
+    -------------------------------------------------------------- */
+    @media print {
+      header.exam-header, .meta-bar, .tab-navigation, .quick-preset-btns, .btn-submit-main, .download-cta-banner {
+        display: none !important;
+      }
+      body {
+        background: #ffffff;
+        font-size: 12pt;
+      }
+      #grading-report-section {
+        display: block !important;
+        margin-top: 0;
+      }
+      .report-hero-card {
+        border: none;
+        box-shadow: none;
+        padding: 0;
+      }
+      .diagnostic-breakdown-card {
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- =============================================================
+       HEADER & NAVIGATION
+  ============================================================== -->
+  <header class="exam-header">
+    <div class="header-inner">
+      <div class="brand-group">
+        <div class="academic-crest">19</div>
+        <div class="brand-title">
+          <h1>IELTS 19 Academic Writing Test 1</h1>
+          <p>Official Standardized Examination Sheet & Automated Grading Architecture</p>
+        </div>
+      </div>
+
+      <div class="header-controls">
+        <div class="timer-badge">
+          <span>⏱ Time Remaining:</span>
+          <span id="timer-text" class="timer-display">60:00</span>
+          <button id="btn-timer-toggle" class="timer-btn" onclick="toggleTimer()">Pause</button>
+          <button id="btn-timer-reset" class="timer-btn" onclick="resetTimer()">Reset</button>
+        </div>
+
+        <button class="btn-submit-main" onclick="submitExamAndGrade()">
+          <span>✓ Submit Exam & Grade Report</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- =============================================================
+       METADATA & QUICK CONTROL BAR
+  ============================================================== -->
+  <div class="meta-bar">
+    <div class="meta-bar-inner">
+      <div class="candidate-fields">
+        <div class="field-item">
+          <label for="cand-name">Candidate Name:</label>
+          <input type="text" id="cand-name" value="Jane Doe (IELTS Academic Candidate)" size="30">
+        </div>
+        <div class="field-item">
+          <label for="cand-number">Candidate No.:</label>
+          <input type="text" id="cand-number" value="098231" size="10">
+        </div>
+        <div class="field-item">
+          <label for="cand-date">Date:</label>
+          <input type="text" id="cand-date" value="October 2026" size="14">
+        </div>
+      </div>
+
+      <div class="quick-preset-btns">
+        <button class="btn-preset" onclick="loadCambridgeSampleAnswers()" title="Load authentic scripts from Cambridge 19 Images 3 & 4">
+          📥 Load Cambridge 19 Sample Scripts (Band 6.5 & 6.0)
+        </button>
+        <button class="btn-preset" onclick="loadExemplarModelAnswers()" title="Load High-Band Model Essays">
+          ⭐ Load Band 9.0 Model Essays
+        </button>
+        <button class="btn-preset" onclick="clearWritingSheets()" title="Clear answers to practice fresh">
+          ✕ Clear Sheet
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =============================================================
+       MAIN WORKSPACE
+  ============================================================== -->
+  <main class="exam-container">
+    
+    <!-- Tab Navigation -->
+    <div class="tab-navigation">
+      <button class="tab-button active" id="tab-btn-task1" onclick="switchTab('task1')">
+        <span>WRITING TASK 1</span>
+        <span id="tab-badge-task1" class="badge-count">0 words</span>
+      </button>
+      <button class="tab-button" id="tab-btn-task2" onclick="switchTab('task2')">
+        <span>WRITING TASK 2</span>
+        <span id="tab-badge-task2" class="badge-count">0 words</span>
+      </button>
+    </div>
+
+    <!-- =============================================================
+         TASK 1 PANE
+    ============================================================== -->
+    <div id="pane-task1" class="tab-pane active">
+      <div class="exam-split-grid">
+        
+        <!-- Left: Question Paper, Visuals & Reference Table -->
+        <div class="task-prompt-column">
+          <div class="academic-card">
+            <div class="card-header-academic">
+              <h3>Task 1 Instructions & Visual Data</h3>
+              <span class="badge-tag">20 Minutes Recommended</span>
+            </div>
+            <div class="card-body-academic">
+              
+              <div class="prompt-instruction-bar">Official Examination Paper Instructions</div>
+              <div class="prompt-box">
+                <p>You should spend about 20 minutes on this task.</p>
+                <p><strong>The graph below gives information on the numbers of participants for different activities at one social centre in Melbourne, Australia for the period 2000 to 2020.</strong></p>
+                <p><strong>Summarise the information by selecting and reporting the main features, and make comparisons where relevant.</strong></p>
+                <p>Write at least 150 words.</p>
+              </div>
+
+              <!-- Interactive Scaled SVG Chart matching 1.png faithfully -->
+              <div class="chart-container-box">
+                <div class="chart-header">
+                  <h4>Number of participants, by activity 2000–2020</h4>
+                  <p>Social Centre in Melbourne, Australia (Interactive Line Graph)</p>
+                </div>
+
+                <div class="svg-wrapper">
+                  <div id="chart-tooltip"></div>
+                  <svg id="task1-chart" class="ielts-line-graph" viewBox="0 0 620 400" width="100%" height="380">
+                    <!-- Definitions for markers and patterns -->
+                    <defs>
+                      <marker id="marker-circle" markerWidth="8" markerHeight="8" refX="4" refY="4">
+                        <circle cx="4" cy="4" r="3" fill="#ffffff" stroke="#0f2b48" stroke-width="1.5" />
+                      </marker>
+                      <marker id="marker-triangle" markerWidth="10" markerHeight="10" refX="5" refY="5">
+                        <polygon points="5,1 9,8 1,8" fill="#ffffff" stroke="#6d28d9" stroke-width="1.5" />
+                      </marker>
+                      <marker id="marker-diamond" markerWidth="8" markerHeight="8" refX="4" refY="4">
+                        <polygon points="4,1 7,4 4,7 1,4" fill="#8c1d40" stroke="#8c1d40" stroke-width="1" />
+                      </marker>
+                      <marker id="marker-square" markerWidth="8" markerHeight="8" refX="4" refY="4">
+                        <rect x="1" y="1" width="6" height="6" fill="#ffffff" stroke="#059669" stroke-width="1.5" />
+                      </marker>
+                    </defs>
+
+                    <!-- Background Gridlines (0, 10, 20, 30, 40, 50, 60, 70) -->
+                    <!-- Y coordinates: 0->330, 10->290, 20->250, 30->210, 40->170, 50->130, 60->90, 70->50 -->
+                    <!-- X coordinates: 2000->90, 2005->180, 2010->270, 2015->360, 2020->450 -->
+                    <g class="grid-lines">
+                      <line x1="80" y1="50" x2="480" y2="50" class="grid-line" />
+                      <line x1="80" y1="90" x2="480" y2="90" class="grid-line" />
+                      <line x1="80" y1="130" x2="480" y2="130" class="grid-line" />
+                      <line x1="80" y1="170" x2="480" y2="170" class="grid-line" />
+                      <line x1="80" y1="210" x2="480" y2="210" class="grid-line" />
+                      <line x1="80" y1="250" x2="480" y2="250" class="grid-line" />
+                      <line x1="80" y1="290" x2="480" y2="290" class="grid-line" />
+                      <line x1="80" y1="330" x2="480" y2="330" class="grid-line" />
+                    </g>
+
+                    <!-- Axes -->
+                    <line x1="80" y1="50" x2="80" y2="330" class="axis-line" />
+                    <line x1="80" y1="330" x2="480" y2="330" class="axis-line" />
+
+                    <!-- Y-Axis Labels & Ticks -->
+                    <g class="axis-text" text-anchor="end">
+                      <text x="72" y="55">70</text><line x1="75" y1="50" x2="80" y2="50" stroke="#333" stroke-width="1.5" />
+                      <text x="72" y="95">60</text><line x1="75" y1="90" x2="80" y2="90" stroke="#333" stroke-width="1.5" />
+                      <text x="72" y="135">50</text><line x1="75" y1="130" x2="80" y2="130" stroke="#333" stroke-width="1.5" />
+                      <text x="72" y="175">40</text><line x1="75" y1="170" x2="80" y2="170" stroke="#333" stroke-width="1.5" />
+                      <text x="72" y="215">30</text><line x1="75" y1="210" x2="80" y2="210" stroke="#333" stroke-width="1.5" />
+                      <text x="72" y="255">20</text><line x1="75" y1="250" x2="80" y2="250" stroke="#333" stroke-width="1.5" />
+                      <text x="72" y="295">10</text><line x1="75" y1="290" x2="80" y2="290" stroke="#333" stroke-width="1.5" />
+                      <text x="72" y="335">0</text><line x1="75" y1="330" x2="80" y2="330" stroke="#333" stroke-width="1.5" />
+                    </g>
+
+                    <!-- Y-Axis Title -->
+                    <text x="-190" y="25" class="axis-title" transform="rotate(-90)" text-anchor="middle">Number of participants</text>
+
+                    <!-- X-Axis Labels & Ticks -->
+                    <g class="axis-text" text-anchor="middle">
+                      <line x1="90" y1="330" x2="90" y2="336" stroke="#333" stroke-width="1.5" /><text x="90" y="352">2000</text>
+                      <line x1="180" y1="330" x2="180" y2="336" stroke="#333" stroke-width="1.5" /><text x="180" y="352">2005</text>
+                      <line x1="270" y1="330" x2="270" y2="336" stroke="#333" stroke-width="1.5" /><text x="270" y="352">2010</text>
+                      <line x1="360" y1="330" x2="360" y2="336" stroke="#333" stroke-width="1.5" /><text x="360" y="352">2015</text>
+                      <line x1="450" y1="330" x2="450" y2="336" stroke="#333" stroke-width="1.5" /><text x="450" y="352">2020</text>
+                    </g>
+                    <!-- X-Axis Title -->
+                    <text x="270" y="380" class="axis-title" text-anchor="middle">Year</text>
+
+                    <!-- 1. FILM CLUB (Solid, Blue, Circles): 2000:64, 2005:62, 2010:60, 2015:64, 2020:66 -->
+                    <!-- Y calc: 330 - (val * 4) -> 64:74, 62:82, 60:90, 64:74, 66:66 -->
+                    <polyline points="90,74 180,82 270,90 360,74 450,66" fill="none" stroke="#0f2b48" stroke-width="2.5" />
+                    <circle cx="90" cy="74" r="5" fill="#ffffff" stroke="#0f2b48" stroke-width="2" class="graph-point" onmouseover="showTip(evt, 'Film club (2000): 64 participants')" onmouseout="hideTip()" />
+                    <circle cx="180" cy="82" r="5" fill="#ffffff" stroke="#0f2b48" stroke-width="2" class="graph-point" onmouseover="showTip(evt, 'Film club (2005): 62 participants')" onmouseout="hideTip()" />
+                    <circle cx="270" cy="90" r="5" fill="#ffffff" stroke="#0f2b48" stroke-width="2" class="graph-point" onmouseover="showTip(evt, 'Film club (2010): 60 participants')" onmouseout="hideTip()" />
+                    <circle cx="360" cy="74" r="5" fill="#ffffff" stroke="#0f2b48" stroke-width="2" class="graph-point" onmouseover="showTip(evt, 'Film club (2015): 64 participants')" onmouseout="hideTip()" />
+                    <circle cx="450" cy="66" r="5" fill="#ffffff" stroke="#0f2b48" stroke-width="2" class="graph-point" onmouseover="showTip(evt, 'Film club (2020): 66 participants')" onmouseout="hideTip()" />
+
+                    <!-- 2. MARTIAL ARTS (Dashed, Purple, Triangles): 2000:36, 2005:32, 2010:38, 2015:34, 2020:36 -->
+                    <!-- Y calc: 36:186, 32:202, 38:178, 34:194, 36:186 -->
+                    <polyline points="90,186 180,202 270,178 360,194 450,186" fill="none" stroke="#7c3aed" stroke-width="2" stroke-dasharray="6,4" />
+                    <polygon points="90,181 95,191 85,191" fill="#ffffff" stroke="#7c3aed" stroke-width="2" class="graph-point" onmouseover="showTip(evt, 'Martial arts (2000): 36 participants')" onmouseout="hideTip()" />
+                    <polygon points="180,197 185,207 175,207" fill="#ffffff" stroke="#7c3aed" stroke-width="2" class="graph-point" onmouseover="showTip(evt, 'Martial arts (2005): 32 participants')" onmouseout="hideTip()" />
+                    <polygon points="270,173 275,183 265,183" fill="#ffffff" stroke="#7c3aed" stroke-width="2" class="graph-point" onmouseover="showTip(evt, 'Martial arts (2010): 38 participants')" onmouseout="hideTip()" />
+                    <polygon points="360,189 365,199 355,199" fill="#ffffff" stroke="#7c3aed" stroke-width="2" class="graph-point" onmouseover="showTip(evt, 'Martial arts (2015): 34 participants')" onmouseout="hideTip()" />
+                    <polygon points="450,181 455,191 445,191" fill="#ffffff" stroke="#7c3aed" stroke-width="2" class="graph-point" onmouseover="showTip(evt, 'Martial arts (2020): 36 participants')" onmouseout="hideTip()" />
+
+                    <!-- 3. AMATEUR DRAMATICS (Dotted, Crimson, Filled Diamonds): 2000:26, 2005:28, 2010:20, 2015:14, 2020:6 -->
+                    <!-- Y calc: 26:226, 28:218, 20:250, 14:274, 6:306 -->
+                    <polyline points="90,226 180,218 270,250 360,274 450,306" fill="none" stroke="#dc2626" stroke-width="2" stroke-dasharray="2,3" />
+                    <polygon points="90,221 95,226 90,231 85,226" fill="#dc2626" stroke="#dc2626" stroke-width="1" class="graph-point" onmouseover="showTip(evt, 'Amateur dramatics (2000): 26 participants')" onmouseout="hideTip()" />
+                    <polygon points="180,213 185,218 180,223 175,218" fill="#dc2626" stroke="#dc2626" stroke-width="1" class="graph-point" onmouseover="showTip(evt, 'Amateur dramatics (2005): 28 participants')" onmouseout="hideTip()" />
+                    <polygon points="270,245 275,250 270,255 265,250" fill="#dc2626" stroke="#dc2626" stroke-width="1" class="graph-point" onmouseover="showTip(evt, 'Amateur dramatics (2010): 20 participants')" onmouseout="hideTip()" />
+                    <polygon points="360,269 365,274 360,279 355,274" fill="#dc2626" stroke="#dc2626" stroke-width="1" class="graph-point" onmouseover="showTip(evt, 'Amateur dramatics (2015): 14 participants')" onmouseout="hideTip()" />
+                    <polygon points="450,301 455,306 450,311 445,306" fill="#dc2626" stroke="#dc2626" stroke-width="1" class="graph-point" onmouseover="showTip(evt, 'Amateur dramatics (2020): 6 participants')" onmouseout="hideTip()" />
+
+                    <!-- 4. TABLE TENNIS (Dash-Dot, Emerald, Open Squares): 2000:16, 2005:20, 2010:20, 2015:36, 2020:54 -->
+                    <!-- Y calc: 16:266, 20:250, 20:250, 36:186, 54:114 -->
+                    <polyline points="90,266 180,250 270,250 360,186 450,114" fill="none" stroke="#059669" stroke-width="2.2" stroke-dasharray="8,3,2,3" />
+                    <rect x="86" y="262" width="8" height="8" fill="#ffffff" stroke="#059669" stroke-width="2" class="graph-point" onmouseover="showTip(evt, 'Table tennis (2000): 16 participants')" onmouseout="hideTip()" />
+                    <rect x="176" y="246" width="8" height="8" fill="#ffffff" stroke="#059669" stroke-width="2" class="graph-point" onmouseover="showTip(evt, 'Table tennis (2005): 20 participants')" onmouseout="hideTip()" />
+                    <rect x="266" y="246" width="8" height="8" fill="#ffffff" stroke="#059669" stroke-width="2" class="graph-point" onmouseover="showTip(evt, 'Table tennis (2010): 20 participants')" onmouseout="hideTip()" />
+                    <rect x="356" y="182" width="8" height="8" fill="#ffffff" stroke="#059669" stroke-width="2" class="graph-point" onmouseover="showTip(evt, 'Table tennis (2015): 36 participants')" onmouseout="hideTip()" />
+                    <rect x="446" y="110" width="8" height="8" fill="#ffffff" stroke="#059669" stroke-width="2" class="graph-point" onmouseover="showTip(evt, 'Table tennis (2020): 54 participants')" onmouseout="hideTip()" />
+
+                    <!-- 5. MUSICAL PERFORMANCES (Solid, Amber, Crosses): 2000:0, 2005:0, 2010:12, 2015:16, 2020:18 -->
+                    <!-- Y calc: 0:330, 0:330, 12:282, 16:266, 18:258 -->
+                    <polyline points="90,330 180,330 270,282 360,266 450,258" fill="none" stroke="#d97706" stroke-width="2" />
+                    <!-- Cross markers: draw as little plus/x -->
+                    <g stroke="#d97706" stroke-width="2.5" class="graph-point" onmouseover="showTip(evt, 'Musical performances (2000): 0 (not offered)')" onmouseout="hideTip()">
+                      <line x1="86" y1="326" x2="94" y2="334" /><line x1="94" y1="326" x2="86" y2="334" />
+                    </g>
+                    <g stroke="#d97706" stroke-width="2.5" class="graph-point" onmouseover="showTip(evt, 'Musical performances (2005): 0 (not offered)')" onmouseout="hideTip()">
+                      <line x1="176" y1="326" x2="184" y2="334" /><line x1="184" y1="326" x2="176" y2="334" />
+                    </g>
+                    <g stroke="#d97706" stroke-width="2.5" class="graph-point" onmouseover="showTip(evt, 'Musical performances (2010): 12 participants')" onmouseout="hideTip()">
+                      <line x1="266" y1="278" x2="274" y2="286" /><line x1="274" y1="278" x2="266" y2="286" />
+                    </g>
+                    <g stroke="#d97706" stroke-width="2.5" class="graph-point" onmouseover="showTip(evt, 'Musical performances (2015): 16 participants')" onmouseout="hideTip()">
+                      <line x1="356" y1="262" x2="364" y2="270" /><line x1="364" y1="262" x2="356" y2="270" />
+                    </g>
+                    <g stroke="#d97706" stroke-width="2.5" class="graph-point" onmouseover="showTip(evt, 'Musical performances (2020): 18 participants')" onmouseout="hideTip()">
+                      <line x1="446" y1="254" x2="454" y2="262" /><line x1="454" y1="254" x2="446" y2="262" />
+                    </g>
+
+                    <!-- Legend Box -->
+                    <rect x="490" y="80" width="125" height="180" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" rx="3" />
+                    
+                    <!-- Legend Item 1 -->
+                    <line x1="500" y1="105" x2="525" y2="105" stroke="#0f2b48" stroke-width="2.5" />
+                    <circle cx="512.5" cy="105" r="4" fill="#ffffff" stroke="#0f2b48" stroke-width="2" />
+                    <text x="532" y="109" class="axis-text" font-size="11">Film club</text>
+
+                    <!-- Legend Item 2 -->
+                    <line x1="500" y1="140" x2="525" y2="140" stroke="#7c3aed" stroke-width="2" stroke-dasharray="4,3" />
+                    <polygon points="512.5,136 516.5,144 508.5,144" fill="#ffffff" stroke="#7c3aed" stroke-width="1.5" />
+                    <text x="532" y="144" class="axis-text" font-size="11">Martial arts</text>
+
+                    <!-- Legend Item 3 -->
+                    <line x1="500" y1="175" x2="525" y2="175" stroke="#dc2626" stroke-width="2" stroke-dasharray="2,2" />
+                    <polygon points="512.5,171 516.5,175 512.5,179 508.5,175" fill="#dc2626" stroke="#dc2626" stroke-width="1" />
+                    <text x="532" y="179" class="axis-text" font-size="11">Amateur drama</text>
+
+                    <!-- Legend Item 4 -->
+                    <line x1="500" y1="210" x2="525" y2="210" stroke="#059669" stroke-width="2" stroke-dasharray="6,2,2,2" />
+                    <rect x="509" y="206.5" width="7" height="7" fill="#ffffff" stroke="#059669" stroke-width="1.5" />
+                    <text x="532" y="214" class="axis-text" font-size="11">Table tennis</text>
+
+                    <!-- Legend Item 5 -->
+                    <line x1="500" y1="245" x2="525" y2="245" stroke="#d97706" stroke-width="2" />
+                    <g stroke="#d97706" stroke-width="2">
+                      <line x1="509" y1="241.5" x2="516" y2="248.5" /><line x1="516" y1="241.5" x2="509" y2="248.5" />
+                    </g>
+                    <text x="532" y="249" class="axis-text" font-size="11">Music perform.</text>
+                  </svg>
+                </div>
+              </div>
+
+              <!-- Academic Data Table -->
+              <h4 style="font-size: 15px; color: var(--navy-primary); margin-bottom: 6px; font-weight: bold;">
+                Activity Attendance Breakdown (2000–2020 Data Matrix)
+              </h4>
+              <table class="academic-table">
+                <thead>
+                  <tr>
+                    <th>Activity</th>
+                    <th>2000</th>
+                    <th>2005</th>
+                    <th>2010</th>
+                    <th>2015</th>
+                    <th>2020</th>
+                    <th>Net Change</th>
+                    <th>Trend Trajectory</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="legend-indicator" style="background: #0f2b48;"></span>Film club</td>
+                    <td>64</td>
+                    <td>62</td>
+                    <td>60</td>
+                    <td>64</td>
+                    <td>66</td>
+                    <td>+2</td>
+                    <td><strong style="color: #0f2b48;">Dominant / Stable High</strong></td>
+                  </tr>
+                  <tr>
+                    <td><span class="legend-indicator" style="background: #7c3aed;"></span>Martial arts</td>
+                    <td>36</td>
+                    <td>32</td>
+                    <td>38</td>
+                    <td>34</td>
+                    <td>36</td>
+                    <td>0</td>
+                    <td><span style="color: #7c3aed;">Fluctuated & Returned</span></td>
+                  </tr>
+                  <tr>
+                    <td><span class="legend-indicator" style="background: #dc2626;"></span>Amateur dramatics</td>
+                    <td>26</td>
+                    <td>28</td>
+                    <td>20</td>
+                    <td>14</td>
+                    <td>6</td>
+                    <td>-20</td>
+                    <td><strong style="color: #dc2626;">Steep Precipitous Drop</strong></td>
+                  </tr>
+                  <tr>
+                    <td><span class="legend-indicator" style="background: #059669;"></span>Table tennis</td>
+                    <td>16</td>
+                    <td>20</td>
+                    <td>20</td>
+                    <td>36</td>
+                    <td>54</td>
+                    <td>+38</td>
+                    <td><strong style="color: #059669;">Dramatic Surge (+238%)</strong></td>
+                  </tr>
+                  <tr>
+                    <td><span class="legend-indicator" style="background: #d97706;"></span>Musical performances</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>12</td>
+                    <td>16</td>
+                    <td>18</td>
+                    <td>+18</td>
+                    <td><span style="color: #d97706;">Introduced in 2010, Steady Rise</span></td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <!-- Toggle Scanned Image View -->
+              <div class="toggle-section">
+                <span class="toggle-link" onclick="toggleImagePreview('t1-img-preview')">
+                  🔍 Click to View / Hide Authentic Cambridge 19 Test 1 Graphic Paper (1.png)
+                </span>
+                <div id="t1-img-preview" class="image-preview-panel">
+                  <img src="1.png" alt="Cambridge 19 Task 1 Line Graph Scan">
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Task 1 Answer Sheet -->
+        <div class="task-sheet-column">
+          <div class="academic-card">
+            <div class="card-header-academic">
+              <h3>Task 1 Writing Response Sheet</h3>
+              <span class="badge-tag" style="background: var(--crimson-accent);">Min 150 Words</span>
+            </div>
+            <div class="card-body-academic answer-sheet-container">
+              
+              <div class="sheet-meta-header">
+                <div class="word-counter-panel">
+                  <div class="counter-item">
+                    <span>Words:</span>
+                    <span id="t1-word-count" class="counter-val">0</span>
+                  </div>
+                  <div class="counter-item">
+                    <span>Paragraphs:</span>
+                    <span id="t1-para-count" class="counter-val">0</span>
+                  </div>
+                  <div id="t1-status-badge" class="word-badge badge-under">Underlength (0/150 words)</div>
+                </div>
+
+                <div style="font-size: 13px; color: var(--text-muted);">
+                  Target: 170–200 words
+                </div>
+              </div>
+
+              <textarea 
+                id="t1-textarea" 
+                class="writing-textarea" 
+                placeholder="Write your Task 1 response here in Times New Roman... Ensure you paraphrase the prompt, present a comprehensive overview, and report key features with comparative data."
+                oninput="updateCounts('t1')"></textarea>
+
+              <div class="writing-guide-tip">
+                <span>Tip: A Band 7.0+ overview must highlight the dominant position of the Film club and contrasting trajectories of Table tennis vs Amateur dramatics.</span>
+                <span id="t1-autosave-status">Auto-saved</span>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- =============================================================
+         TASK 2 PANE
+    ============================================================== -->
+    <div id="pane-task2" class="tab-pane">
+      <div class="exam-split-grid">
+        
+        <!-- Left: Task 2 Prompt & Structural Planning Guidelines -->
+        <div class="task-prompt-column">
+          <div class="academic-card">
+            <div class="card-header-academic">
+              <h3>Task 2 Instructions & Prompt Guidelines</h3>
+              <span class="badge-tag">40 Minutes Recommended</span>
+            </div>
+            <div class="card-body-academic">
+              
+              <div class="prompt-instruction-bar">Official Examination Essay Topic</div>
+              <div class="prompt-box">
+                <p>You should spend about 40 minutes on this task.</p>
+                <p>Write about the following topic:</p>
+                <div style="background: #fafafa; border-left: 4px solid var(--navy-primary); padding: 12px 16px; margin: 10px 0;">
+                  <p style="font-size: 17px; font-weight: bold; color: #0f2b48; font-style: normal;">
+                    Some people think that competition at work, at school and in daily life is a good thing. Others believe that we should try to cooperate more, rather than competing against each other.
+                  </p>
+                  <p style="font-size: 16px; font-weight: bold; color: var(--crimson-accent); font-style: normal;">
+                    Discuss both these views and give your own opinion.
+                  </p>
+                </div>
+                <p>Give reasons for your answer and include any relevant examples from your own knowledge or experience.</p>
+                <p>Write at least 250 words.</p>
+              </div>
+
+              <!-- Academic Guidelines Matrix -->
+              <h4 style="font-size: 15px; color: var(--navy-primary); margin-bottom: 8px; font-weight: bold;">
+                Essential Essay Criteria & Structural Checklist:
+              </h4>
+              <table class="academic-table">
+                <thead>
+                  <tr>
+                    <th>Component</th>
+                    <th>Official Expectation</th>
+                    <th>Cambridge 19 Pitfall to Avoid</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>View 1: Competition</strong></td>
+                    <td>Analyze benefits: drive, meritocracy, innovation, high standards in school/work.</td>
+                    <td>Do not merely praise cooperation while neglecting deep analysis of competition.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>View 2: Cooperation</strong></td>
+                    <td>Analyze benefits: team synergy, reduced toxic stress, collective problem solving.</td>
+                    <td>Avoid superficial anecdotes without broad analytical rationale.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Personal Opinion</strong></td>
+                    <td>State clear nuanced position throughout (e.g. balanced synthesis).</td>
+                    <td><strong>CRITICAL:</strong> Avoid contradictions (e.g. concluding "life is a competition, be a winner" after arguing competition is destructive).</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Paragraphing</strong></td>
+                    <td>Strict 4-paragraph layout: Intro, Body 1 (Comp), Body 2 (Coop), Conclusion.</td>
+                    <td><strong>BAND 5 TRAP:</strong> Cambridge 19 sample failed paragraphing (single block), ruining Coherence & Cohesion!</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <!-- Toggle Scanned Image View -->
+              <div class="toggle-section">
+                <span class="toggle-link" onclick="toggleImagePreview('t2-img-preview')">
+                  🔍 Click to View / Hide Authentic Cambridge 19 Task 2 Question Paper (2.png)
+                </span>
+                <div id="t2-img-preview" class="image-preview-panel">
+                  <img src="2.png" alt="Cambridge 19 Task 2 Question Scan">
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Task 2 Answer Sheet -->
+        <div class="task-sheet-column">
+          <div class="academic-card">
+            <div class="card-header-academic">
+              <h3>Task 2 Writing Response Sheet</h3>
+              <span class="badge-tag" style="background: var(--crimson-accent);">Min 250 Words</span>
+            </div>
+            <div class="card-body-academic answer-sheet-container">
+              
+              <div class="sheet-meta-header">
+                <div class="word-counter-panel">
+                  <div class="counter-item">
+                    <span>Words:</span>
+                    <span id="t2-word-count" class="counter-val">0</span>
+                  </div>
+                  <div class="counter-item">
+                    <span>Paragraphs:</span>
+                    <span id="t2-para-count" class="counter-val">0</span>
+                  </div>
+                  <div id="t2-status-badge" class="word-badge badge-under">Underlength (0/250 words)</div>
+                </div>
+
+                <div style="font-size: 13px; color: var(--text-muted);">
+                  Target: 270–320 words
+                </div>
+              </div>
+
+              <textarea 
+                id="t2-textarea" 
+                class="writing-textarea" 
+                placeholder="Write your Task 2 essay here in Times New Roman... Organize strictly into 4 distinct paragraphs: Introduction with thesis, Body Paragraph 1 (Competition), Body Paragraph 2 (Cooperation), and Conclusion with clear personal stance."
+                oninput="updateCounts('t2')"></textarea>
+
+              <div class="writing-guide-tip">
+                <span>Tip: Always group ideas into distinct paragraphs to safeguard your Coherence and Cohesion score!</span>
+                <span id="t2-autosave-status">Auto-saved</span>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- =============================================================
+         DIAGNOSTIC & AUTOMATED GRADING REPORT SECTION
+    ============================================================== -->
+    <section id="grading-report-section">
+      <div class="report-hero-card">
+        
+        <div class="report-hero-header">
+          <h2>IELTS 19 Academic Writing Test 1 Evaluation Report</h2>
+          <p>Automated Criterion-by-Criterion Diagnostic & Section-by-Section Benchmark Analysis</p>
+        </div>
+
+        <!-- Executive Band Summary Grid -->
+        <div class="band-summary-grid">
+          <div class="score-summary-card">
+            <h3>Writing Task 1</h3>
+            <div id="rep-t1-band" class="score-big-number">6.5</div>
+            <div class="score-weight-note">Weight: 33.3% | Target: 150+ Words</div>
+            <div id="rep-t1-words" style="font-size: 13px; margin-top: 4px; font-weight: bold; color: var(--navy-primary);">190 words</div>
+          </div>
+
+          <div class="score-summary-card overall-card">
+            <h3>Overall Writing Band Score</h3>
+            <div id="rep-overall-band" class="score-big-number">6.5</div>
+            <div class="score-weight-note">Official IELTS Weighted Formula: Round((T1/3 + 2×T2/3) × 2) / 2</div>
+            <div id="rep-cand-summary" style="font-size: 13px; margin-top: 4px; font-weight: bold; color: var(--crimson-accent);">Evaluated Candidate: Jane Doe</div>
+          </div>
+
+          <div class="score-summary-card">
+            <h3>Writing Task 2</h3>
+            <div id="rep-t2-band" class="score-big-number">6.0</div>
+            <div class="score-weight-note">Weight: 66.7% | Target: 250+ Words</div>
+            <div id="rep-t2-words" style="font-size: 13px; margin-top: 4px; font-weight: bold; color: var(--navy-primary);">285 words</div>
+          </div>
+        </div>
+
+        <!-- Download Action Banner -->
+        <div class="download-cta-banner">
+          <div class="download-cta-text">
+            <h3>📥 Download Complete Official Word Document (.docx)</h3>
+            <p>Export your full candidate report with item-wise diagnostics, Cambridge examiner comments, and model answers.</p>
+          </div>
+          <div class="download-buttons-group">
+            <button class="btn-download-docx" onclick="downloadWordReportDocx()">
+              <span>📄 Download Word (.docx)</span>
+            </button>
+            <button class="btn-download-doc" onclick="downloadWordReportDoc()">
+              <span>📑 Download Word (.doc)</span>
+            </button>
+            <button class="btn-print-report" onclick="window.print()">
+              <span>🖨 Print / PDF</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 4-Criterion Assessment Matrix Table -->
+        <div style="margin-bottom: 30px;">
+          <h3 style="font-size: 18px; color: var(--navy-primary); margin-bottom: 12px; font-weight: bold; border-bottom: 2px solid var(--navy-primary); padding-bottom: 4px;">
+            1. Official IELTS Criteria Breakdown Matrix
+          </h3>
+          <table class="academic-table">
+            <thead>
+              <tr>
+                <th>IELTS Assessment Criterion</th>
+                <th>Task 1 Score</th>
+                <th>Task 2 Score</th>
+                <th>Criterion Focus & Diagnostic Expectation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Task Achievement (T1) / Task Response (T2)</strong></td>
+                <td><strong id="m-t1-ta" style="color: var(--navy-primary); font-size: 16px;">6.5</strong></td>
+                <td><strong id="m-t2-tr" style="color: var(--navy-primary); font-size: 16px;">6.0</strong></td>
+                <td>Complete overview & coverage of all 5 activities (T1); Addressing both competition & cooperation + clear opinion (T2).</td>
+              </tr>
+              <tr>
+                <td><strong>Coherence and Cohesion (CC)</strong></td>
+                <td><strong id="m-t1-cc" style="color: var(--navy-primary); font-size: 16px;">7.0</strong></td>
+                <td><strong id="m-t2-cc" style="color: var(--navy-primary); font-size: 16px;">5.5</strong></td>
+                <td>Logical paragraph sequencing, range of discourse markers, referencing & substitution without repetitive mechanical devices.</td>
+              </tr>
+              <tr>
+                <td><strong>Lexical Resource (LR)</strong></td>
+                <td><strong id="m-t1-lr" style="color: var(--navy-primary); font-size: 16px;">6.5</strong></td>
+                <td><strong id="m-t2-lr" style="color: var(--navy-primary); font-size: 16px;">6.5</strong></td>
+                <td>Range and precision of academic vocabulary, dynamic trend collocations, absence of spelling errors (e.g. 'fluctuated' vs 'flactuated').</td>
+              </tr>
+              <tr>
+                <td><strong>Grammatical Range and Accuracy (GRA)</strong></td>
+                <td><strong id="m-t1-gra" style="color: var(--navy-primary); font-size: 16px;">6.0</strong></td>
+                <td><strong id="m-t2-gra" style="color: var(--navy-primary); font-size: 16px;">6.0</strong></td>
+                <td>Control of complex structures, passive voice ('was introduced'), past tense consistency, correct prepositions and articles.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Section 2: Task 1 Diagnostic -->
+        <div class="diagnostic-breakdown-card">
+          <div class="diagnostic-header">
+            <h3>2. Writing Task 1: Detailed Question-Item-Wise Diagnostic</h3>
+            <span id="rep-t1-badge" class="badge-tag" style="background: var(--navy-primary);">Task 1 Band: 6.5</span>
+          </div>
+          <div class="diagnostic-body">
+            
+            <div class="analysis-block">
+              <div class="analysis-block-title title-strengths">
+                <span>✔ Key Strengths Identified:</span>
+              </div>
+              <ul id="t1-strengths-ul" class="analysis-list strengths-list">
+                <!-- dynamic -->
+              </ul>
+            </div>
+
+            <div class="analysis-block">
+              <div class="analysis-block-title title-weaknesses">
+                <span>✖ Diagnostic Weaknesses & Inaccuracies:</span>
+              </div>
+              <ul id="t1-weaknesses-ul" class="analysis-list weaknesses-list">
+                <!-- dynamic -->
+              </ul>
+            </div>
+
+            <div class="analysis-block">
+              <div class="analysis-block-title title-improvements">
+                <span>➔ Actionable Areas for Improvement (Roadmap to Band 8.0+):</span>
+              </div>
+              <ul id="t1-improvements-ul" class="analysis-list improvements-list">
+                <!-- dynamic -->
+              </ul>
+            </div>
+
+            <!-- Cambridge Benchmark Comparison Box -->
+            <div class="cambridge-examiner-callout">
+              <div class="callout-title">Official Cambridge 19 Examiner Benchmark Notes (Band 6.5 Sample from Image 3)</div>
+              <div class="callout-body">
+                "This good response begins with an introduction, then in the second paragraph summarises the main trends. The next few paragraphs contain the data and cover each of the participant groups. The information is organised logically and a range of linking devices are used [Overall | Another striking point | In the next 10 years]. There is also some flexible reference and substitution [while | which | it | their] with a few inaccuracies.
+                <br><br>
+                Vocabulary is generally good [got involved in | levelled off | dramatic surge], but there are some errors [flactuated / fluctuated | amateurs on draturgy / amateur dramatics]. This response has a variety of grammatical structures and the past simple tense is well controlled. There are sentences with multiple clauses, including superlatives [most popular], but also some errors in verb forms [introduced / was introduced], some missing articles [public / the public | dramatic surge / a dramatic surge | next two / the next two], some errors with prepositions [in club for it / in the club | by about 20 / to about 20] and inconsistent capitalisation. The candidate should demonstrate a greater level of accuracy with grammatical structures."
+              </div>
+            </div>
+
+            <!-- Band 9 Model Answer Box -->
+            <div class="model-essay-box">
+              <div class="model-title">Cambridge Band 9.0 Exemplar Model Answer for Task 1</div>
+              <div class="model-content">
+The line graph delineates the number of individuals engaging in five distinct activities at a single social centre in Melbourne, Australia, over a 20-year timeframe from 2000 to 2020.
+
+Overall, it is readily apparent that the film club remained by far the most popular activity throughout the entire period, despite minor oscillations. Furthermore, table tennis and musical performances experienced notable growth, whereas participation in amateur dramatics saw a pronounced and steady decline. In contrast, martial arts attendance exhibited relative stability over the two decades.
+
+Regarding the dominant and upward-trending activities, the film club began with approximately 64 participants in 2000, dipped marginally to 60 in 2010, before rebounding to culminate at a peak of 66 in 2020. Simultaneously, table tennis commenced at a modest 16 members, plateaued at 20 between 2005 and 2010, and then underwent an exponential surge to finish as the second most attended activity at 54 participants in 2020.
+
+Turning to the remaining pursuits, martial arts fluctuated between 32 and 38 attendees, concluding where it started at 36. Conversely, amateur dramatics, which peaked slightly at 28 participants in 2005 from an initial 26, plummeted precipitously to merely 6 by the end of the timeline. Finally, musical performances were introduced in 2010 with 12 participants and steadily increased to 18 attendees by 2020.
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Section 3: Task 2 Diagnostic -->
+        <div class="diagnostic-breakdown-card">
+          <div class="diagnostic-header">
+            <h3>3. Writing Task 2: Detailed Question-Item-Wise Diagnostic</h3>
+            <span id="rep-t2-badge" class="badge-tag" style="background: var(--crimson-accent);">Task 2 Band: 6.0</span>
+          </div>
+          <div class="diagnostic-body">
+            
+            <div class="analysis-block">
+              <div class="analysis-block-title title-strengths">
+                <span>✔ Key Strengths Identified:</span>
+              </div>
+              <ul id="t2-strengths-ul" class="analysis-list strengths-list">
+                <!-- dynamic -->
+              </ul>
+            </div>
+
+            <div class="analysis-block">
+              <div class="analysis-block-title title-weaknesses">
+                <span>✖ Diagnostic Weaknesses & Inaccuracies:</span>
+              </div>
+              <ul id="t2-weaknesses-ul" class="analysis-list weaknesses-list">
+                <!-- dynamic -->
+              </ul>
+            </div>
+
+            <div class="analysis-block">
+              <div class="analysis-block-title title-improvements">
+                <span>➔ Actionable Areas for Improvement (Roadmap to Band 8.0+):</span>
+              </div>
+              <ul id="t2-improvements-ul" class="analysis-list improvements-list">
+                <!-- dynamic -->
+              </ul>
+            </div>
+
+            <!-- Cambridge Benchmark Comparison Box -->
+            <div class="cambridge-examiner-callout">
+              <div class="callout-title">Official Cambridge 19 Examiner Benchmark Notes (Band 6.0 Sample from Image 4)</div>
+              <div class="callout-body">
+                "This response covers the task and is engaging to read. The candidate starts by saying competition can be good and bad, too much can be [destructive] and too little can be [depressing] as you would have [no motivation, no goals]. No specific examples are given, and they would improve the response. The rest of the response addresses 'cooperation' but is mostly about how people can cooperate rather than comparing 'cooperation' with 'competition' in line with the question. The conclusion [... be a winner] slightly contradicts the earlier point [I don't believe that there is such a thing as "co-operating" too much].
+                <br><br>
+                <strong>Unfortunately, there is no paragraphing to group ideas together or indicate main topics. This affects the rating for coherence and cohesion.</strong>
+                <br><br>
+                There is some higher-level vocabulary [destructive | motivation | career-wise] with some idiomatic use [draw the line] which makes vocabulary the strongest area in this response. A wider range would be needed for a higher score. There is a range of grammatical structures, including comparative forms and conditional [if] structures.
+                <br><br>
+                Although they do address the task and present relevant ideas, to achieve a higher score, the candidate should organise the response into paragraphs and discuss both views. They could also demonstrate a greater level of accuracy with vocabulary and grammatical structures."
+              </div>
+            </div>
+
+            <!-- Band 9 Model Essay Box -->
+            <div class="model-essay-box">
+              <div class="model-title">Cambridge Band 9.0 Exemplar Model Essay for Task 2</div>
+              <div class="model-content">
+In contemporary society, whether human endeavors in professional, academic, and personal spheres should be driven by competition or anchored in cooperation remains a contentious debate. While advocates of competition argue that it fuels motivation and excellence, proponents of cooperation contend that collective harmony and shared effort yield superior outcomes. In my view, although healthy competition serves as a potent catalyst for individual drive, cooperative synergy is fundamentally more indispensable for sustainable long-term success.
+
+On the one hand, competition offers undeniable benefits by incentivizing individuals to reach their maximum potential. In academic environments, competitive benchmarking encourages pupils to cultivate discipline and master demanding curricula. Similarly, in commercial and workplace settings, rivalry among professionals and corporate entities spurs innovation, refines operational efficiency, and ensures that merit is rewarded. When individuals strive to surpass their peers, complacency is minimized, prompting continuous self-improvement and resilience.
+
+On the other hand, cooperation fosters psychological well-being and collective problem-solving that solitary competition cannot replicate. Complex modern challenges—such as technological innovation, healthcare delivery, and global environmental sustainability—require multidisciplinary teamwork rather than individualistic confrontation. Excessive competition frequently engenders a cut-throat atmosphere characterized by chronic anxiety, burnout, and distrust. By contrast, a collaborative ethos promotes psychological safety, mutual empathy, and knowledge sharing, enabling groups to achieve synergistic solutions that far exceed individual capabilities.
+
+In conclusion, while competition certainly plays a constructive role in stimulating ambition and high performance, an unbridled competitive culture risks eroding social cohesion and psychological health. I firmly believe that fostering deep cooperation must serve as the primary cornerstone of modern education and the workplace, with healthy competition reserved merely as a secondary motivating factor.
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =============================================================
+       JAVASCRIPT ARCHITECTURE & GRADING ENGINE
+  ============================================================== -->
+  <script>
+    /* -------------------------------------------------------------
+       STATE MANAGEMENT & TIMER
+    -------------------------------------------------------------- */
+    let timerTotalSeconds = 3600; // 60 minutes
+    let timerInterval = null;
+    let timerRunning = true;
+
+    function initTimer() {
+      updateTimerDisplay();
+      timerInterval = setInterval(() => {
+        if (timerRunning && timerTotalSeconds > 0) {
+          timerTotalSeconds--;
+          updateTimerDisplay();
+        } else if (timerTotalSeconds === 0) {
+          clearInterval(timerInterval);
+          alert("Time is up! Submitting exam for evaluation...");
+          submitExamAndGrade();
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay() {
+      const minutes = Math.floor(timerTotalSeconds / 60);
+      const seconds = timerTotalSeconds % 60;
+      const str = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+      const elem = document.getElementById('timer-text');
+      elem.textContent = str;
+
+      if (timerTotalSeconds <= 300) {
+        elem.className = "timer-display timer-danger";
+      } else if (timerTotalSeconds <= 900) {
+        elem.className = "timer-display timer-warning";
+      } else {
+        elem.className = "timer-display";
+      }
+    }
+
+    function toggleTimer() {
+      timerRunning = !timerRunning;
+      document.getElementById('btn-timer-toggle').textContent = timerRunning ? 'Pause' : 'Resume';
+    }
+
+    function resetTimer() {
+      timerTotalSeconds = 3600;
+      updateTimerDisplay();
+      if (!timerRunning) {
+        timerRunning = true;
+        document.getElementById('btn-timer-toggle').textContent = 'Pause';
+      }
+    }
+
+    /* -------------------------------------------------------------
+       TAB NAVIGATION
+    -------------------------------------------------------------- */
+    function switchTab(taskId) {
+      document.getElementById('pane-task1').classList.remove('active');
+      document.getElementById('pane-task2').classList.remove('active');
+      document.getElementById('tab-btn-task1').classList.remove('active');
+      document.getElementById('tab-btn-task2').classList.remove('active');
+
+      if (taskId === 'task1') {
+        document.getElementById('pane-task1').classList.add('active');
+        document.getElementById('tab-btn-task1').classList.add('active');
+      } else {
+        document.getElementById('pane-task2').classList.add('active');
+        document.getElementById('tab-btn-task2').classList.add('active');
+      }
+    }
+
+    function toggleImagePreview(id) {
+      const el = document.getElementById(id);
+      el.style.display = (el.style.display === 'block') ? 'none' : 'block';
+    }
+
+    /* -------------------------------------------------------------
+       TOOLTIP FOR SVG CHART
+    -------------------------------------------------------------- */
+    function showTip(evt, text) {
+      const tip = document.getElementById('chart-tooltip');
+      tip.textContent = text;
+      tip.style.display = 'block';
+      const containerRect = document.querySelector('.svg-wrapper').getBoundingClientRect();
+      tip.style.left = (evt.clientX - containerRect.left + 10) + 'px';
+      tip.style.top = (evt.clientY - containerRect.top - 30) + 'px';
+    }
+
+    function hideTip() {
+      const tip = document.getElementById('chart-tooltip');
+      tip.style.display = 'none';
+    }
+
+    /* -------------------------------------------------------------
+       WORD & PARAGRAPH COUNT TRACKING
+    -------------------------------------------------------------- */
+    function getWords(text) {
+      const matched = text.match(/\b[\w'-]+\b/g);
+      return matched ? matched : [];
+    }
+
+    function getParagraphs(text) {
+      return text.split(/\n+/).map(p => p.trim()).filter(p => p.length > 0);
+    }
+
+    function updateCounts(task) {
+      const textarea = document.getElementById(`${task}-textarea`);
+      const text = textarea.value;
+      const words = getWords(text);
+      const paras = getParagraphs(text);
+      const wCount = words.length;
+      const pCount = paras.length;
+
+      document.getElementById(`${task}-word-count`).textContent = wCount;
+      document.getElementById(`${task}-para-count`).textContent = pCount;
+      document.getElementById(`tab-badge-${task === 't1' ? 'task1' : 'task2'}`).textContent = `${wCount} words`;
+
+      // Badge logic
+      const badge = document.getElementById(`${task}-status-badge`);
+      const target = task === 't1' ? 150 : 250;
+
+      if (wCount < target) {
+        badge.className = "word-badge badge-under";
+        badge.textContent = `Underlength (${wCount}/${target} words)`;
+      } else if (wCount <= target + 80) {
+        badge.className = "word-badge badge-ok";
+        badge.textContent = `Target Met (${wCount} words)`;
+      } else {
+        badge.className = "word-badge badge-warn";
+        badge.textContent = `Optimal Length (${wCount} words)`;
+      }
+
+      // Check single paragraph warning for Task 2
+      if (task === 't2' && wCount > 100 && pCount === 1) {
+        badge.textContent = `⚠️ Single Paragraph Penalty Risk!`;
+        badge.className = "word-badge badge-under";
+      }
+
+      // Save to localStorage
+      try {
+        localStorage.setItem(`ielts19_${task}_draft`, text);
+        document.getElementById(`${task}-autosave-status`).textContent = "Saved to storage";
+      } catch (e) {}
+    }
+
+    /* -------------------------------------------------------------
+       PRESET LOADERS
+    -------------------------------------------------------------- */
+    const CAMBRIDGE_SAMPLE_TASK1 = 
+`The line graph highlights data about how many people participated in 5 various activities at one social club in Melbourne, Australia for the first two decades of XXI century.
+
+Overall, over the years more participants got involved in activities on Table tennis and Musical plays, while Amateur dramatics lost its interest for public. Being flactuated, two types of activities, which are Film club and Martial arts levelled off. Another striking point is that over a twenty-year period between 2000 and 2020, the Film club kept its position as the most popular activity.
+
+Looking at the details of Table tennis, in 2000, there were about 15 participants in club for it. In the next 10 years, it attracted 5 more members, before dramatic surge from 20 to below 60 participants. In 2005, the activity on Musical performances introduced and over the following 15 years, it saw a steady increase on the number of participants by about 20 in the last year.
+
+Regarding next two activities, Film club and Martial arts, the saw fluactions, but without any changes in the overall position. Film club started the process with about 60 members and finished it just below 70, while the participants of Martial arts kept their numbers at around 35.
+
+The number of participants of amateurs on draturgy was about 25 and it saw a steady decrease then by 10.`;
+
+    const CAMBRIDGE_SAMPLE_TASK2 = 
+`In my opinion competition at work, at school and in daily life can both be a good thing and a bad thing. Why? because I think too much of anything can be destructive. Yes, it's a very good thing to be competitive but don't overdo it! Having no competition in your life at all can be very depressing, because you have no motivation, no goals you want to achieve, everytime you wake up in the morning. I don't believe that there is such thing as "co-operating" too much, when you work with someone you should work together as a team and co-operate, but also do things for yourself, like something career-wise. You should think of your future in your work. That goes the same if you are still in school, take my school life for example. If I am very good at one subject in particular, lots of other student may come up to me and ask for pointers. I would be very glad to help them. If there is any homework, school mates may come over to do it together. this is also fine and very good for building relationship. But sometimes there are people who think you are so nice and ask you to do their work for them. This is where you should draw the line, yes you are friends and you should help each other, but that doesn't mean that you have to do their homework or give them answer when there is a test. Remember life is a competition, be a winner.`;
+
+    const MODEL_BAND9_TASK1 = 
+`The line graph delineates the number of individuals engaging in five distinct activities at a single social centre in Melbourne, Australia, over a 20-year timeframe from 2000 to 2020.
+
+Overall, it is readily apparent that the film club remained by far the most popular activity throughout the entire period, despite minor oscillations. Furthermore, table tennis and musical performances experienced notable growth, whereas participation in amateur dramatics saw a pronounced and steady decline. In contrast, martial arts attendance exhibited relative stability over the two decades.
+
+Regarding the dominant and upward-trending activities, the film club began with approximately 64 participants in 2000, dipped marginally to 60 in 2010, before rebounding to culminate at a peak of 66 in 2020. Simultaneously, table tennis commenced at a modest 16 members, plateaued at 20 between 2005 and 2010, and then underwent an exponential surge to finish as the second most attended activity at 54 participants in 2020.
+
+Turning to the remaining pursuits, martial arts fluctuated between 32 and 38 attendees, concluding where it started at 36. Conversely, amateur dramatics, which peaked slightly at 28 participants in 2005 from an initial 26, plummeted precipitously to merely 6 by the end of the timeline. Finally, musical performances were introduced in 2010 with 12 participants and steadily increased to 18 attendees by 2020.`;
+
+    const MODEL_BAND9_TASK2 = 
+`In contemporary society, whether human endeavors in professional, academic, and personal spheres should be driven by competition or anchored in cooperation remains a contentious debate. While advocates of competition argue that it fuels motivation and excellence, proponents of cooperation contend that collective harmony and shared effort yield superior outcomes. In my view, although healthy competition serves as a potent catalyst for individual drive, cooperative synergy is fundamentally more indispensable for sustainable long-term success.
+
+On the one hand, competition offers undeniable benefits by incentivizing individuals to reach their maximum potential. In academic environments, competitive benchmarking encourages pupils to cultivate discipline and master demanding curricula. Similarly, in commercial and workplace settings, rivalry among professionals and corporate entities spurs innovation, refines operational efficiency, and ensures that merit is rewarded. When individuals strive to surpass their peers, complacency is minimized, prompting continuous self-improvement and resilience.
+
+On the other hand, cooperation fosters psychological well-being and collective problem-solving that solitary competition cannot replicate. Complex modern challenges—such as technological innovation, healthcare delivery, and global environmental sustainability—require multidisciplinary teamwork rather than individualistic confrontation. Excessive competition frequently engenders a cut-throat atmosphere characterized by chronic anxiety, burnout, and distrust. By contrast, a collaborative ethos promotes psychological safety, mutual empathy, and knowledge sharing, enabling groups to achieve synergistic solutions that far exceed individual capabilities.
+
+In conclusion, while competition certainly plays a constructive role in stimulating ambition and high performance, an unbridled competitive culture risks eroding social cohesion and psychological health. I firmly believe that fostering deep cooperation must serve as the primary cornerstone of modern education and the workplace, with healthy competition reserved merely as a secondary motivating factor.`;
+
+    function loadCambridgeSampleAnswers() {
+      document.getElementById('t1-textarea').value = CAMBRIDGE_SAMPLE_TASK1;
+      document.getElementById('t2-textarea').value = CAMBRIDGE_SAMPLE_TASK2;
+      document.getElementById('cand-name').value = "Cambridge 19 Authentic Candidate Sample";
+      updateCounts('t1');
+      updateCounts('t2');
+      alert("Loaded Official Cambridge 19 Sample Answers (Band 6.5 for Task 1 and Band 6.0 for Task 2) from Images 3 & 4. Click 'Submit Exam & Grade Report' to see the deep diagnostic analysis!");
+    }
+
+    function loadExemplarModelAnswers() {
+      document.getElementById('t1-textarea').value = MODEL_BAND9_TASK1;
+      document.getElementById('t2-textarea').value = MODEL_BAND9_TASK2;
+      document.getElementById('cand-name').value = "Exemplar Band 9.0 Candidate";
+      updateCounts('t1');
+      updateCounts('t2');
+      alert("Loaded Cambridge Band 9.0 Exemplar Model Answers! Click 'Submit Exam & Grade Report' to evaluate.");
+    }
+
+    function clearWritingSheets() {
+      if (confirm("Are you sure you want to clear both writing answer sheets?")) {
+        document.getElementById('t1-textarea').value = "";
+        document.getElementById('t2-textarea').value = "";
+        updateCounts('t1');
+        updateCounts('t2');
+      }
+    }
+
+    /* -------------------------------------------------------------
+       DEEP ANALYTICAL GRADING ENGINE
+    -------------------------------------------------------------- */
+    function evaluateTask1(text) {
+      const words = getWords(text);
+      const paras = getParagraphs(text);
+      const wCount = words.length;
+      const pCount = paras.length;
+      const lower = text.toLowerCase();
+
+      let ta = 6.5, cc = 6.5, lr = 6.0, gra = 6.0;
+      const strengths = [];
+      const weaknesses = [];
+      const improvements = [];
+
+      // 1. Task Achievement (TA)
+      if (wCount < 150) {
+        const pen = Math.min(2.5, ((150 - wCount) / 25));
+        ta = Math.max(4.0, ta - pen);
+        weaknesses.push(`Word count deficit: Only ${wCount} words written (official minimum is 150). Automatic Task Achievement underlength deduction applied.`);
+        improvements.push("Ensure you write at least 150 words (aim for 170-190 words) to report and compare all key trends thoroughly.");
+      } else {
+        strengths.push(`Satisfies length requirement (${wCount} words, exceeding the 150-word minimum threshold).`);
+      }
+
+      // Overview check
+      const hasOverview = /(overall|in summary|broadly speaking|most striking|striking point|it is noticeable that)/i.test(text);
+      if (hasOverview) {
+        strengths.push("Explicit overview present: Clearly outlines the dominant trend (Film club) and main shifts across the 20-year span.");
+      } else {
+        ta = Math.min(ta, 5.0);
+        weaknesses.push("Missing or ambiguous overview: IELTS Task 1 criteria strictly cap Task Achievement at Band 5.0 if a clear overview is absent.");
+        improvements.push("Dedicate a distinct paragraph immediately after the introduction to an Overview summarizing the overall dominant and fluctuating trends.");
+      }
+
+      // Coverage of all 5 activities
+      const acts = {
+        "Film club": /(film|cinema|movie)/i.test(text),
+        "Table tennis": /(table tennis|ping pong)/i.test(text),
+        "Martial arts": /(martial|judo|karate)/i.test(text),
+        "Amateur dramatics": /(dramatics|drama|draturgy|theatre|acting)/i.test(text),
+        "Musical performances": /(music|musical|performance)/i.test(text)
+      };
+      const missing = Object.keys(acts).filter(k => !acts[k]);
+      if (missing.length === 0) {
+        strengths.push("Exhaustive feature coverage: Reports data for all five activities illustrated in the Melbourne social centre chart.");
+      } else {
+        weaknesses.push(`Incomplete coverage: Omitted or failed to identify data for: ${missing.join(', ')}.`);
+        improvements.push("Systematically mention all 5 activities from the line graph to demonstrate comprehensive Task Achievement.");
+      }
+
+      // 2. Coherence and Cohesion (CC)
+      if (pCount >= 3) {
+        strengths.push(`Logical paragraph structure: Content is well-apportioned into ${pCount} paragraphs (Introduction, Overview, and thematic data groupings).`);
+      } else {
+        cc = Math.min(cc, 5.5);
+        weaknesses.push(`Sub-optimal organization: Divided into only ${pCount} paragraph(s). Separate the overview from specific detailed figures.`);
+        improvements.push("Adopt a standard 4-paragraph structure: Paraphrase Intro, Comprehensive Overview, Rising/High Trends Body, Declining/Stable Trends Body.");
+      }
+
+      const connectors = ["while", "whereas", "in contrast", "another striking point", "furthermore", "regarding", "looking at", "conversely", "meanwhile", "simultaneously"];
+      const foundConn = connectors.filter(c => lower.includes(c));
+      if (foundConn.length >= 2) {
+        strengths.push(`Good use of cohesive devices to contrast trajectories (${foundConn.slice(0, 3).join(', ')}).`);
+      } else {
+        weaknesses.push("Limited cohesive devices: Comparative transitions between activities could be smoother.");
+      }
+
+      // 3. Lexical Resource (LR)
+      if (lower.includes("flactuated")) {
+        weaknesses.push("Spelling inaccuracy detected: 'flactuated' (correct spelling is 'fluctuated').");
+        improvements.push("Master accurate academic spelling for trend verbs: 'fluctuate / fluctuated / fluctuation'.");
+      }
+      if (lower.includes("draturgy") || lower.includes("amateurs on draturgy")) {
+        weaknesses.push("Lexical misapplication: 'amateurs on draturgy' is inaccurate; use 'amateur dramatics' or 'theatrical club'.");
+        improvements.push("Rely on precise task terminology: use 'amateur dramatics' or 'drama participants'.");
+      }
+
+      const trendWords = ["surge", "levelled off", "peaked", "plummeted", "steady increase", "fluctuat", "soared", "pronounced", "oscillat"];
+      const foundTrends = trendWords.filter(t => lower.includes(t));
+      if (foundTrends.length >= 2) {
+        strengths.push(`Employs appropriate dynamic trend lexis (${foundTrends.slice(0, 3).join(', ')}).`);
+        lr = Math.max(lr, 6.5);
+      } else {
+        improvements.push("Incorporate richer dynamic verbs and adverbs (e.g., 'surged dramatically', 'dropped precipitously', 'hovered around').");
+      }
+
+      // 4. Grammatical Range and Accuracy (GRA)
+      if (lower.includes("musical performances introduced") && !lower.includes("was introduced") && !lower.includes("were introduced")) {
+        weaknesses.push("Voice error: Active voice incorrectly used instead of passive ('introduced' rather than 'was introduced').");
+        improvements.push("Use passive construction for activities: 'Musical performances were introduced in 2010'.");
+      }
+
+      if (/(in club for it|interest for public|next two|dramatic surge)/.test(lower)) {
+        weaknesses.push("Grammatical slips observed with articles and prepositions (missing 'the', awkward phrasing).");
+      }
+
+      const complexClauses = ["which", "while", "whereas", "although", "despite", "before"];
+      const hasComplex = complexClauses.some(c => lower.includes(c));
+      if (hasComplex) {
+        strengths.push("Demonstrates complex sentence structures containing subordinate clauses and relative pronouns.");
+        gra = Math.max(gra, 6.5);
+      }
+
+      // Rounding to half band
+      const roundHalf = num => Math.round(Math.max(1, Math.min(9, num)) * 2) / 2;
+      ta = roundHalf(ta);
+      cc = roundHalf(cc);
+      lr = roundHalf(lr);
+      gra = roundHalf(gra);
+      const overall = roundHalf((ta + cc + lr + gra) / 4);
+
+      return {
+        wordCount: wCount,
+        paraCount: pCount,
+        ta, cc, lr, gra, overall,
+        strengths, weaknesses, improvements
+      };
+    }
+
+    function evaluateTask2(text) {
+      const words = getWords(text);
+      const paras = getParagraphs(text);
+      const wCount = words.length;
+      const pCount = paras.length;
+      const lower = text.toLowerCase();
+
+      let tr = 6.0, cc = 6.0, lr = 6.0, gra = 6.0;
+      const strengths = [];
+      const weaknesses = [];
+      const improvements = [];
+
+      // 1. Task Response (TR)
+      if (wCount < 250) {
+        const pen = Math.min(3.0, ((250 - wCount) / 30));
+        tr = Math.max(4.0, tr - pen);
+        weaknesses.push(`Underlength response: Only ${wCount} words written (official minimum is 250). Severe Task Response penalty applied.`);
+        improvements.push("Write at least 250 words (aim for 270-320 words) to fully elaborate on both sides with concrete examples.");
+      } else {
+        strengths.push(`Satisfies official essay length (${wCount} words, exceeding the 250-word minimum).`);
+      }
+
+      const compKws = ["compet", "rival", "excel", "drive", "strive", "ambition", "merit"];
+      const coopKws = ["cooperat", "collaborat", "team", "together", "mutual", "synerg", "support", "help"];
+      const hasComp = compKws.some(k => lower.includes(k));
+      const hasCoop = coopKws.some(k => lower.includes(k));
+
+      if (hasComp && hasCoop) {
+        strengths.push("Addresses both views specified in the prompt: explores arguments for competition as well as cooperation.");
+      } else {
+        tr = Math.min(tr, 5.0);
+        weaknesses.push("Unbalanced argument: Neglects one of the two core perspectives required by the prompt.");
+        improvements.push("Ensure one full body paragraph is dedicated to the virtues of competition and one full body paragraph to cooperation.");
+      }
+
+      const hasOpinion = /(in my opinion|i believe|in my view|i think|i argue|i contend|from my perspective)/i.test(text);
+      if (hasOpinion) {
+        strengths.push("Presents an identifiable personal opinion on the balance between competition and cooperation.");
+      } else {
+        weaknesses.push("Unclear position: Candidate's personal stance is vague or not clearly expressed.");
+        improvements.push("State your thesis clearly in the introduction and re-affirm it decisively in the conclusion.");
+      }
+
+      // Check contradiction (from Cambridge Band 6.0 sample)
+      if (lower.includes("be a winner") && (lower.includes("too much") || lower.includes("destructive"))) {
+        weaknesses.push("Internal logical contradiction: Concluding with 'life is a competition, be a winner' contradicts earlier assertions that competition can be destructive.");
+        improvements.push("Maintain philosophical consistency across all paragraphs: do not reverse your stated stance in the final sentence.");
+      }
+
+      // 2. Coherence and Cohesion (CC)
+      if (pCount === 1) {
+        cc = 5.0; // Strict Cambridge examiner penalty!
+        weaknesses.push("FATAL STRUCTURAL DEFICIT: The essay is written in a single undivided block of text without paragraphing. This caps Coherence & Cohesion at Band 5.0.");
+        improvements.push("Always organize your essay into 4 separate paragraphs: 1. Introduction, 2. Body on Competition, 3. Body on Cooperation, 4. Conclusion.");
+      } else if (pCount >= 4) {
+        strengths.push(`Effective paragraph organization: Divided into ${pCount} clear paragraphs matching academic essay conventions.`);
+        cc = Math.max(cc, 6.5);
+      } else {
+        weaknesses.push(`Only ${pCount} paragraph(s) detected. A 4-paragraph layout is required for 'Discuss both views' essays.`);
+      }
+
+      // 3. Lexical Resource (LR)
+      const higherLex = ["destructive", "motivation", "career-wise", "draw the line", "synergy", "catalyst", "complacency", "resilience", "cohesion", "individualistic"];
+      const foundLex = higherLex.filter(w => lower.includes(w));
+      if (foundLex.length >= 2) {
+        strengths.push(`Good range of relevant and idiomatic vocabulary: ${foundLex.slice(0, 4).join(', ')}.`);
+        lr = Math.max(lr, 6.5);
+      }
+
+      if (/(everytime|there is such thing|lots of other student|give them answer)/.test(lower)) {
+        weaknesses.push("Minor lexical and grammatical slips (e.g., 'everytime' should be two words; 'lots of other student' lacks plural -s).");
+        improvements.push("Adopt a consistently formal academic register; avoid colloquialisms like 'lots of' or conversational rhetorical questions ('Why? Because...').");
+      }
+
+      // 4. Grammatical Range and Accuracy (GRA)
+      const hasConditionals = lower.includes("if ") || lower.includes("unless") || lower.includes("provided that");
+      const hasComparatives = /(more|better|rather than|superior|greater|destructive)/.test(lower);
+      if (hasConditionals && hasComparatives) {
+        strengths.push("Accurate employment of conditional structures ('if') and comparative constructions.");
+        gra = Math.max(gra, 6.5);
+      }
+
+      const roundHalf = num => Math.round(Math.max(1, Math.min(9, num)) * 2) / 2;
+      tr = roundHalf(tr);
+      cc = roundHalf(cc);
+      lr = roundHalf(lr);
+      gra = roundHalf(gra);
+      const overall = roundHalf((tr + cc + lr + gra) / 4);
+
+      return {
+        wordCount: wCount,
+        paraCount: pCount,
+        tr, cc, lr, gra, overall,
+        strengths, weaknesses, improvements
+      };
+    }
+
+    function calculateOverallBand(t1Overall, t2Overall) {
+      // Official IELTS weighted formula: Task 1 weighs 1/3, Task 2 weighs 2/3. Round to nearest 0.5.
+      const weighted = (t1Overall * (1.0 / 3.0)) + (t2Overall * (2.0 / 3.0));
+      return Math.round(weighted * 2.0) / 2.0;
+    }
+
+    let lastEvaluation = null;
+
+    function submitExamAndGrade() {
+      const candName = document.getElementById('cand-name').value || "Jane Doe";
+      const t1Text = document.getElementById('t1-textarea').value.trim();
+      const t2Text = document.getElementById('t2-textarea').value.trim();
+
+      if (!t1Text && !t2Text) {
+        alert("Please write your answers in Task 1 and/or Task 2 before submitting, or click 'Load Cambridge 19 Sample Scripts'!");
+        return;
+      }
+
+      const t1Res = evaluateTask1(t1Text);
+      const t2Res = evaluateTask2(t2Text);
+      const finalBand = calculateOverallBand(t1Res.overall, t2Res.overall);
+
+      lastEvaluation = {
+        candName,
+        testDate: document.getElementById('cand-date').value || "October 2026",
+        candNumber: document.getElementById('cand-number').value || "098231",
+        t1Text,
+        t2Text,
+        t1Res,
+        t2Res,
+        finalBand
+      };
+
+      // Populate UI Report
+      document.getElementById('rep-cand-summary').textContent = `Evaluated Candidate: ${candName}`;
+      document.getElementById('rep-overall-band').textContent = finalBand.toFixed(1);
+      document.getElementById('rep-t1-band').textContent = t1Res.overall.toFixed(1);
+      document.getElementById('rep-t2-band').textContent = t2Res.overall.toFixed(1);
+      document.getElementById('rep-t1-words').textContent = `${t1Res.wordCount} words written`;
+      document.getElementById('rep-t2-words').textContent = `${t2Res.wordCount} words written`;
+
+      // Matrix Table
+      document.getElementById('m-t1-ta').textContent = t1Res.ta.toFixed(1);
+      document.getElementById('m-t2-tr').textContent = t2Res.tr.toFixed(1);
+      document.getElementById('m-t1-cc').textContent = t1Res.cc.toFixed(1);
+      document.getElementById('m-t2-cc').textContent = t2Res.cc.toFixed(1);
+      document.getElementById('m-t1-lr').textContent = t1Res.lr.toFixed(1);
+      document.getElementById('m-t2-lr').textContent = t2Res.lr.toFixed(1);
+      document.getElementById('m-t1-gra').textContent = t1Res.gra.toFixed(1);
+      document.getElementById('m-t2-gra').textContent = t2Res.gra.toFixed(1);
+
+      document.getElementById('rep-t1-badge').textContent = `Task 1 Band: ${t1Res.overall.toFixed(1)}`;
+      document.getElementById('rep-t2-badge').textContent = `Task 2 Band: ${t2Res.overall.toFixed(1)}`;
+
+      // Render Task 1 Lists
+      renderList('t1-strengths-ul', t1Res.strengths);
+      renderList('t1-weaknesses-ul', t1Res.weaknesses);
+      renderList('t1-improvements-ul', t1Res.improvements);
+
+      // Render Task 2 Lists
+      renderList('t2-strengths-ul', t2Res.strengths);
+      renderList('t2-weaknesses-ul', t2Res.weaknesses);
+      renderList('t2-improvements-ul', t2Res.improvements);
+
+      // Show Report Section and scroll smoothly
+      const repSec = document.getElementById('grading-report-section');
+      repSec.style.display = 'block';
+      repSec.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function renderList(ulId, items) {
+      const ul = document.getElementById(ulId);
+      ul.innerHTML = "";
+      if (!items || items.length === 0) {
+        const li = document.createElement('li');
+        li.textContent = "None observed.";
+        ul.appendChild(li);
+        return;
+      }
+      items.forEach(item => {
+        const li = document.createElement('li');
+        li.textContent = item;
+        ul.appendChild(li);
+      });
+    }
+
+    /* -------------------------------------------------------------
+       PURE CLIENT-SIDE WORD DOCUMENT GENERATION (.DOCX & .DOC)
+       Generates standard OpenXML PKZip .docx entirely inside the browser!
+    -------------------------------------------------------------- */
+    
+    // Lightweight, zero-dependency PKZip implementation (STORE method)
+    function buildZipArchive(fileList) {
+      const crcTable = new Uint32Array(256);
+      for (let i = 0; i < 256; i++) {
+        let c = i;
+        for (let k = 0; k < 8; k++) {
+          c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+        }
+        crcTable[i] = c;
+      }
+
+      function calcCrc32(bytes) {
+        let crc = 0xFFFFFFFF;
+        for (let i = 0; i < bytes.length; i++) {
+          crc = crcTable[(crc ^ bytes[i]) & 0xFF] ^ (crc >>> 8);
+        }
+        return (crc ^ 0xFFFFFFFF) >>> 0;
+      }
+
+      const encoder = new TextEncoder();
+      const entries = [];
+      for (const f of fileList) {
+        const dataBytes = typeof f.content === 'string' ? encoder.encode(f.content) : f.content;
+        const nameBytes = encoder.encode(f.name);
+        const crc = calcCrc32(dataBytes);
+        entries.push({
+          nameBytes,
+          dataBytes,
+          crc,
+          size: dataBytes.length,
+          offset: 0
+        });
+      }
+
+      let currentOffset = 0;
+      for (const entry of entries) {
+        entry.offset = currentOffset;
+        currentOffset += 30 + entry.nameBytes.length + entry.size;
+      }
+
+      const cdOffset = currentOffset;
+      let cdSize = 0;
+      for (const entry of entries) {
+        cdSize += 46 + entry.nameBytes.length;
+      }
+
+      const totalSize = cdOffset + cdSize + 22;
+      const buffer = new Uint8Array(totalSize);
+      const view = new DataView(buffer.buffer);
+
+      let pos = 0;
+      // Local headers and data
+      for (const entry of entries) {
+        view.setUint32(pos, 0x04034b50, true); pos += 4; // signature
+        view.setUint16(pos, 20, true); pos += 2; // version
+        view.setUint16(pos, 0, true); pos += 2; // flags
+        view.setUint16(pos, 0, true); pos += 2; // compression: store
+        view.setUint16(pos, 0, true); pos += 2; // time
+        view.setUint16(pos, 0x2158, true); pos += 2; // date
+        view.setUint32(pos, entry.crc, true); pos += 4;
+        view.setUint32(pos, entry.size, true); pos += 4;
+        view.setUint32(pos, entry.size, true); pos += 4;
+        view.setUint16(pos, entry.nameBytes.length, true); pos += 2;
+        view.setUint16(pos, 0, true); pos += 2; // extra len
+        buffer.set(entry.nameBytes, pos); pos += entry.nameBytes.length;
+        buffer.set(entry.dataBytes, pos); pos += entry.size;
+      }
+
+      // Central directory records
+      for (const entry of entries) {
+        view.setUint32(pos, 0x02014b50, true); pos += 4;
+        view.setUint16(pos, 20, true); pos += 2;
+        view.setUint16(pos, 20, true); pos += 2;
+        view.setUint16(pos, 0, true); pos += 2;
+        view.setUint16(pos, 0, true); pos += 2;
+        view.setUint16(pos, 0, true); pos += 2;
+        view.setUint16(pos, 0x2158, true); pos += 2;
+        view.setUint32(pos, entry.crc, true); pos += 4;
+        view.setUint32(pos, entry.size, true); pos += 4;
+        view.setUint32(pos, entry.size, true); pos += 4;
+        view.setUint16(pos, entry.nameBytes.length, true); pos += 2;
+        view.setUint16(pos, 0, true); pos += 2;
+        view.setUint16(pos, 0, true); pos += 2;
+        view.setUint16(pos, 0, true); pos += 2;
+        view.setUint16(pos, 0, true); pos += 2;
+        view.setUint32(pos, 0, true); pos += 4;
+        view.setUint32(pos, entry.offset, true); pos += 4;
+        buffer.set(entry.nameBytes, pos); pos += entry.nameBytes.length;
+      }
+
+      // End of central directory record
+      view.setUint32(pos, 0x06054b50, true); pos += 4;
+      view.setUint16(pos, 0, true); pos += 2;
+      view.setUint16(pos, 0, true); pos += 2;
+      view.setUint16(pos, entries.length, true); pos += 2;
+      view.setUint16(pos, entries.length, true); pos += 2;
+      view.setUint32(pos, cdSize, true); pos += 4;
+      view.setUint32(pos, cdOffset, true); pos += 4;
+      view.setUint16(pos, 0, true); pos += 2;
+
+      return buffer;
+    }
+
+    function escapeXml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&apos;');
+    }
+
+    function createDocxXmls(data) {
+      const contentTypes = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+  <Default Extension="xml" ContentType="application/xml"/>
+  <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
+  <Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>
+</Types>`;
+
+      const rels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
+</Relationships>`;
+
+      const docRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
+</Relationships>`;
+
+      const styles = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:docDefaults>
+    <w:rPrDefault>
+      <w:rPr>
+        <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+        <w:sz w:val="22"/>
+        <w:szCs w:val="22"/>
+        <w:lang w:val="en-US"/>
+      </w:rPr>
+    </w:rPrDefault>
+    <w:pPrDefault>
+      <w:pPr>
+        <w:spacing w:after="160" w:line="276" w:lineRule="auto"/>
+      </w:pPr>
+    </w:pPrDefault>
+  </w:docDefaults>
+</w:styles>`;
+
+      // Document paragraphs helper
+      function para(text, bold=false, size=22, color="000000", align="left", italic=false) {
+        const jc = align !== "left" ? `<w:jc w:val="${align}"/>` : '';
+        const b = bold ? '<w:b/>' : '';
+        const it = italic ? '<w:i/>' : '';
+        const col = color !== "000000" ? `<w:color w:val="${color}"/>` : '';
+        return `<w:p><w:pPr>${jc}<w:spacing w:after="120"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/>${b}${it}${col}<w:sz w:val="${size}"/><w:szCs w:val="${size}"/></w:rPr><w:t xml:space="preserve">${escapeXml(text)}</w:t></w:r></w:p>`;
+      }
+
+      function bullet(text, color="000000") {
+        return `<w:p><w:pPr><w:ind w:left="360"/><w:spacing w:after="80"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:b/><w:color w:val="${color}"/></w:rPr><w:t xml:space="preserve">• </w:t></w:r><w:r><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:sz w:val="21"/></w:rPr><w:t xml:space="preserve">${escapeXml(text)}</w:t></w:r></w:p>`;
+      }
+
+      let docXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+<w:body>
+  ${para("IELTS 19 ACADEMIC WRITING TEST 1", true, 36, "0F2B48", "center")}
+  ${para("OFFICIAL CANDIDATE EVALUATION & DIAGNOSTIC GRADING REPORT", true, 24, "8C1D40", "center")}
+  ${para(`Candidate: ${data.candName} | No: ${data.candNumber} | Date: ${data.testDate}`, false, 20, "555555", "center")}
+  
+  <w:p><w:pPr><w:spacing w:after="240"/></w:pPr></w:p>
+
+  <!-- Executive Summary Banner -->
+  <w:tbl>
+    <w:tblPr>
+      <w:tblW w:w="9500" w:type="dxa"/>
+      <w:tblBorders>
+        <w:top w:val="single" w:sz="6" w:color="0F2B48"/>
+        <w:bottom w:val="single" w:sz="6" w:color="0F2B48"/>
+        <w:left w:val="single" w:sz="6" w:color="0F2B48"/>
+        <w:right w:val="single" w:sz="6" w:color="0F2B48"/>
+        <w:insideH w:val="single" w:sz="4" w:color="CBD5E1"/>
+        <w:insideV w:val="single" w:sz="4" w:color="CBD5E1"/>
+      </w:tblBorders>
+    </w:tblPr>
+    <w:tr>
+      <w:tc>
+        <w:tcPr><w:shd w:fill="F0F4F9"/><w:tcMar><w:top w:w="120" w:type="dxa"/><w:bottom w:w="120" w:type="dxa"/><w:left w:w="150" w:type="dxa"/><w:right w:w="150" w:type="dxa"/></w:tcMar></w:tcPr>
+        ${para("TASK 1 BAND SCORE", true, 20, "0F2B48", "center")}
+        ${para(data.t1Res.overall.toFixed(1), true, 44, "0F2B48", "center")}
+        ${para(`Words: ${data.t1Res.wordCount} (Min 150)`, false, 18, "666666", "center")}
+      </w:tc>
+      <w:tc>
+        <w:tcPr><w:shd w:fill="FFF0F3"/><w:tcMar><w:top w:w="120" w:type="dxa"/><w:bottom w:w="120" w:type="dxa"/><w:left w:w="150" w:type="dxa"/><w:right w:w="150" w:type="dxa"/></w:tcMar></w:tcPr>
+        ${para("OVERALL WRITING BAND", true, 22, "8C1D40", "center")}
+        ${para(data.finalBand.toFixed(1), true, 56, "8C1D40", "center")}
+        ${para("Official Formula: Round((T1/3 + 2×T2/3) × 2) / 2", true, 18, "8C1D40", "center")}
+      </w:tc>
+      <w:tc>
+        <w:tcPr><w:shd w:fill="F0F4F9"/><w:tcMar><w:top w:w="120" w:type="dxa"/><w:bottom w:w="120" w:type="dxa"/><w:left w:w="150" w:type="dxa"/><w:right w:w="150" w:type="dxa"/></w:tcMar></w:tcPr>
+        ${para("TASK 2 BAND SCORE", true, 20, "0F2B48", "center")}
+        ${para(data.t2Res.overall.toFixed(1), true, 44, "0F2B48", "center")}
+        ${para(`Words: ${data.t2Res.wordCount} (Min 250)`, false, 18, "666666", "center")}
+      </w:tc>
+    </w:tr>
+  </w:tbl>
+
+  <w:p><w:pPr><w:spacing w:after="240"/></w:pPr></w:p>
+
+  ${para("1. CRITERION-BY-CRITERION ASSESSMENT MATRIX", true, 26, "0F2B48")}
+  
+  <w:tbl>
+    <w:tblPr>
+      <w:tblW w:w="9500" w:type="dxa"/>
+      <w:tblBorders>
+        <w:top w:val="single" w:sz="6" w:color="CCCCCC"/>
+        <w:bottom w:val="single" w:sz="6" w:color="CCCCCC"/>
+        <w:insideH w:val="single" w:sz="4" w:color="E2E8F0"/>
+        <w:insideV w:val="none"/>
+        <w:left w:val="none"/>
+        <w:right w:val="none"/>
+      </w:tblBorders>
+    </w:tblPr>
+    <w:tr>
+      <w:tc><w:tcPr><w:shd w:fill="E2E8F0"/></w:tcPr>${para("IELTS Criterion", true, 20, "0F2B48")}</w:tc>
+      <w:tc><w:tcPr><w:shd w:fill="E2E8F0"/></w:tcPr>${para("Task 1 Band", true, 20, "0F2B48", "center")}</w:tc>
+      <w:tc><w:tcPr><w:shd w:fill="E2E8F0"/></w:tcPr>${para("Task 2 Band", true, 20, "0F2B48", "center")}</w:tc>
+      <w:tc><w:tcPr><w:shd w:fill="E2E8F0"/></w:tcPr>${para("Official Band Expectation", true, 20, "0F2B48")}</w:tc>
+    </w:tr>
+    <w:tr>
+      <w:tc>${para("Task Achievement / Response", true, 20)}</w:tc>
+      <w:tc>${para(data.t1Res.ta.toFixed(1), true, 20, "000000", "center")}</w:tc>
+      <w:tc>${para(data.t2Res.tr.toFixed(1), true, 20, "000000", "center")}</w:tc>
+      <w:tc>${para("T1: Complete overview & all 5 activities; T2: Both views covered + clear personal stance.", false, 18)}</w:tc>
+    </w:tr>
+    <w:tr>
+      <w:tc>${para("Coherence and Cohesion", true, 20)}</w:tc>
+      <w:tc>${para(data.t1Res.cc.toFixed(1), true, 20, "000000", "center")}</w:tc>
+      <w:tc>${para(data.t2Res.cc.toFixed(1), true, 20, "000000", "center")}</w:tc>
+      <w:tc>${para("Logical sequencing, paragraphing, discourse markers, flexible referencing.", false, 18)}</w:tc>
+    </w:tr>
+    <w:tr>
+      <w:tc>${para("Lexical Resource", true, 20)}</w:tc>
+      <w:tc>${para(data.t1Res.lr.toFixed(1), true, 20, "000000", "center")}</w:tc>
+      <w:tc>${para(data.t2Res.lr.toFixed(1), true, 20, "000000", "center")}</w:tc>
+      <w:tc>${para("Academic trend vocabulary, accurate spelling (avoid 'flactuated'), natural collocations.", false, 18)}</w:tc>
+    </w:tr>
+    <w:tr>
+      <w:tc>${para("Grammatical Range & Accuracy", true, 20)}</w:tc>
+      <w:tc>${para(data.t1Res.gra.toFixed(1), true, 20, "000000", "center")}</w:tc>
+      <w:tc>${para(data.t2Res.gra.toFixed(1), true, 20, "000000", "center")}</w:tc>
+      <w:tc>${para("Complex structures, passive voice ('was introduced'), past tense consistency.", false, 18)}</w:tc>
+    </w:tr>
+  </w:tbl>
+
+  <w:p><w:pPr><w:spacing w:after="240"/></w:pPr></w:p>
+
+  <!-- Section 2: Task 1 Diagnostic -->
+  ${para("2. WRITING TASK 1: DEEP QUESTION-ITEM-WISE DIAGNOSTIC", true, 26, "0F2B48")}
+  ${para(`Word Count: ${data.t1Res.wordCount} (Min 150) | Paragraphs: ${data.t1Res.paraCount} | Overall Task 1 Band: ${data.t1Res.overall.toFixed(1)}`, true, 19, "666666")}
+  
+  ${para("Key Strengths Identified:", true, 22, "166534")}
+  ${data.t1Res.strengths.map(s => bullet(s, "166534")).join('')}
+
+  ${para("Diagnostic Weaknesses & Errors:", true, 22, "8C1D40")}
+  ${data.t1Res.weaknesses.map(w => bullet(w, "8C1D40")).join('')}
+
+  ${para("Actionable Areas for Improvement (Roadmap to Band 8.0+):", true, 22, "0F2B48")}
+  ${data.t1Res.improvements.map(i => bullet(i, "0F2B48")).join('')}
+
+  ${para("Cambridge 19 Official Benchmark: Examiner Commentary (Band 6.5 Sample):", true, 20, "8C1D40")}
+  ${para("This good response begins with an introduction, then in the second paragraph summarises the main trends. The next few paragraphs contain the data and cover each of the participant groups. The information is organised logically and a range of linking devices are used [Overall | Another striking point | In the next 10 years]. There is also some flexible reference and substitution [while | which | it | their] with a few inaccuracies. Vocabulary is generally good [got involved in | levelled off | dramatic surge], but there are some errors [flactuated / fluctuated | amateurs on draturgy / amateur dramatics]. This response has a variety of grammatical structures and the past simple tense is well controlled. There are sentences with multiple clauses, including superlatives [most popular], but also some errors in verb forms [introduced / was introduced], some missing articles [public / the public | dramatic surge / a dramatic surge | next two / the next two], some errors with prepositions [in club for it / in the club | by about 20 / to about 20] and inconsistent capitalisation. The candidate should demonstrate a greater level of accuracy with grammatical structures.", false, 19, "333333", "left", true)}
+
+  <w:p><w:pPr><w:spacing w:after="240"/></w:pPr></w:p>
+
+  <!-- Section 3: Task 2 Diagnostic -->
+  ${para("3. WRITING TASK 2: DEEP QUESTION-ITEM-WISE DIAGNOSTIC", true, 26, "0F2B48")}
+  ${para(`Word Count: ${data.t2Res.wordCount} (Min 250) | Paragraphs: ${data.t2Res.paraCount} | Overall Task 2 Band: ${data.t2Res.overall.toFixed(1)}`, true, 19, "666666")}
+
+  ${para("Key Strengths Identified:", true, 22, "166534")}
+  ${data.t2Res.strengths.map(s => bullet(s, "166534")).join('')}
+
+  ${para("Diagnostic Weaknesses & Structural Deficits:", true, 22, "8C1D40")}
+  ${data.t2Res.weaknesses.map(w => bullet(w, "8C1D40")).join('')}
+
+  ${para("Actionable Areas for Improvement (Roadmap to Band 8.0+):", true, 22, "0F2B48")}
+  ${data.t2Res.improvements.map(i => bullet(i, "0F2B48")).join('')}
+
+  ${para("Cambridge 19 Official Benchmark: Examiner Commentary (Band 6.0 Sample):", true, 20, "8C1D40")}
+  ${para("This response covers the task and is engaging to read. The candidate starts by saying competition can be good and bad, too much can be [destructive] and too little can be [depressing] as you would have [no motivation, no goals]. No specific examples are given, and they would improve the response. The rest of the response addresses 'cooperation' but is mostly about how people can cooperate rather than comparing 'cooperation' with 'competition' in line with the question. The conclusion [... be a winner] slightly contradicts the earlier point [I don't believe that there is such a thing as 'co-operating' too much]. Unfortunately, there is no paragraphing to group ideas together or indicate main topics. This affects the rating for coherence and cohesion. There is some higher-level vocabulary [destructive | motivation | career-wise] with some idiomatic use [draw the line] which makes vocabulary the strongest area in this response. A wider range would be needed for a higher score. There is a range of grammatical structures, including comparative forms and conditional [if] structures. Although they do address the task and present relevant ideas, to achieve a higher score, the candidate should organise the response into paragraphs and discuss both views. They could also demonstrate a greater level of accuracy with vocabulary and grammatical structures.", false, 19, "333333", "left", true)}
+
+  <w:p><w:pPr><w:spacing w:after="240"/></w:pPr></w:p>
+
+  <!-- Section 4: Model Essays -->
+  ${para("4. CAMBRIDGE BAND 9.0 BENCHMARK EXEMPLAR MODEL ESSAYS", true, 26, "0F2B48")}
+  
+  ${para("Task 1 Model Answer (Band 9.0):", true, 22, "0F2B48")}
+  ${para(MODEL_BAND9_TASK1, false, 19, "222222")}
+
+  ${para("Task 2 Model Essay (Band 9.0):", true, 22, "0F2B48")}
+  ${para(MODEL_BAND9_TASK2, false, 19, "222222")}
+
+  <!-- Appendix: Candidate text -->
+  <w:p><w:pPr><w:spacing w:after="240"/></w:pPr></w:p>
+  ${para("5. APPENDIX: CANDIDATE SUBMITTED TRANSCRIPTS", true, 26, "0F2B48")}
+  
+  ${para("Candidate Task 1 Text:", true, 20, "0F2B48")}
+  ${para(data.t1Text || "[No response submitted for Task 1]", false, 19, "333333")}
+
+  ${para("Candidate Task 2 Text:", true, 20, "0F2B48")}
+  ${para(data.t2Text || "[No response submitted for Task 2]", false, 19, "333333")}
+
+</w:body>
+</w:document>`;
+
+      return [
+        { name: "[Content_Types].xml", content: contentTypes },
+        { name: "_rels/.rels", content: rels },
+        { name: "word/_rels/document.xml.rels", content: docRels },
+        { name: "word/styles.xml", content: styles },
+        { name: "word/document.xml", content: docXml }
+      ];
+    }
+
+    function downloadWordReportDocx() {
+      if (!lastEvaluation) {
+        submitExamAndGrade();
+      }
+      const files = createDocxXmls(lastEvaluation);
+      const zipBytes = buildZipArchive(files);
+      const blob = new Blob([zipBytes], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `IELTS_19_Writing_Test_1_Report_${lastEvaluation.candName.replace(/\s+/g, '_')}.docx`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function downloadWordReportDoc() {
+      if (!lastEvaluation) {
+        submitExamAndGrade();
+      }
+      const data = lastEvaluation;
+      const htmlDoc = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+<head>
+<meta charset='utf-8'>
+<!--[if gte mso 9]>
+<xml>
+<w:WordDocument>
+<w:View>Print</w:View>
+<w:Zoom>100</w:Zoom>
+<w:DoNotOptimizeForBrowser/>
+</w:WordDocument>
+</xml>
+<![endif]-->
+<style>
+@page WordSection1 {
+  size: 8.5in 11.0in;
+  margin: 1.0in 1.0in 1.0in 1.0in;
+}
+div.WordSection1 { page: WordSection1; }
+body, table, td, th, p, li { font-family: 'Times New Roman', serif; font-size: 11pt; color: #1a1a1a; }
+h1 { font-family: 'Times New Roman', serif; color: #0f2b48; font-size: 18pt; text-align: center; margin-bottom: 2pt; }
+h2 { font-family: 'Times New Roman', serif; color: #8c1d40; font-size: 13pt; text-align: center; margin-bottom: 12pt; }
+h3 { font-family: 'Times New Roman', serif; color: #0f2b48; font-size: 13pt; border-bottom: 1pt solid #0f2b48; padding-bottom: 3pt; margin-top: 15pt; }
+table { width: 100%; border-collapse: collapse; margin: 10pt 0; }
+th { background: #f0f4f9; color: #0f2b48; border: 1pt solid #cbd5e1; padding: 6pt; font-weight: bold; }
+td { border: 1pt solid #cbd5e1; padding: 6pt; }
+.banner { background: #f8fafc; border: 1.5pt solid #0f2b48; padding: 10pt; text-align: center; }
+.score-box { font-size: 26pt; font-weight: bold; color: #8c1d40; }
+.callout { background: #fdf2f4; border-left: 3pt solid #8c1d40; padding: 8pt; margin: 8pt 0; font-style: italic; }
+</style>
+</head>
+<body>
+<div class="WordSection1">
+  <h1>IELTS 19 ACADEMIC WRITING TEST 1</h1>
+  <h2>OFFICIAL EVALUATION & DIAGNOSTIC REPORT</h2>
+  <p style="text-align: center;">Candidate: <b>${escapeXml(data.candName)}</b> | Date: ${escapeXml(data.testDate)} | Center: Melbourne Examination Centre</p>
+  
+  <div class="banner">
+    <p><b>TASK 1 BAND: ${data.t1Res.overall.toFixed(1)}</b> &nbsp;|&nbsp; 
+       <span class="score-box">OVERALL BAND: ${data.finalBand.toFixed(1)}</span> &nbsp;|&nbsp; 
+       <b>TASK 2 BAND: ${data.t2Res.overall.toFixed(1)}</b></p>
+  </div>
+
+  <h3>1. Assessment Matrix</h3>
+  <table>
+    <tr><th>Criterion</th><th>Task 1 Band</th><th>Task 2 Band</th><th>Official Benchmark Expectation</th></tr>
+    <tr><td><b>Task Achievement / Response</b></td><td style="text-align:center;"><b>${data.t1Res.ta.toFixed(1)}</b></td><td style="text-align:center;"><b>${data.t2Res.tr.toFixed(1)}</b></td><td>Overview & data coverage (T1); Both views addressed + clear opinion (T2).</td></tr>
+    <tr><td><b>Coherence and Cohesion</b></td><td style="text-align:center;"><b>${data.t1Res.cc.toFixed(1)}</b></td><td style="text-align:center;"><b>${data.t2Res.cc.toFixed(1)}</b></td><td>Paragraph structure, logical progression, cohesive devices.</td></tr>
+    <tr><td><b>Lexical Resource</b></td><td style="text-align:center;"><b>${data.t1Res.lr.toFixed(1)}</b></td><td style="text-align:center;"><b>${data.t2Res.lr.toFixed(1)}</b></td><td>Academic lexis, accurate spelling (avoid 'flactuated'), natural collocations.</td></tr>
+    <tr><td><b>Grammatical Range & Accuracy</b></td><td style="text-align:center;"><b>${data.t1Res.gra.toFixed(1)}</b></td><td style="text-align:center;"><b>${data.t2Res.gra.toFixed(1)}</b></td><td>Complex clauses, passive voice ('was introduced'), tense consistency.</td></tr>
+  </table>
+
+  <h3>2. Task 1 Deep Diagnostic</h3>
+  <p><b>Words:</b> ${data.t1Res.wordCount} | <b>Band:</b> ${data.t1Res.overall.toFixed(1)}</p>
+  <p><b>Strengths:</b></p>
+  <ul>${data.t1Res.strengths.map(s => `<li>${escapeXml(s)}</li>`).join('')}</ul>
+  <p><b>Weaknesses:</b></p>
+  <ul>${data.t1Res.weaknesses.map(w => `<li>${escapeXml(w)}</li>`).join('')}</ul>
+  <p><b>Areas for Improvement:</b></p>
+  <ul>${data.t1Res.improvements.map(i => `<li>${escapeXml(i)}</li>`).join('')}</ul>
+
+  <h3>3. Task 2 Deep Diagnostic</h3>
+  <p><b>Words:</b> ${data.t2Res.wordCount} | <b>Band:</b> ${data.t2Res.overall.toFixed(1)}</p>
+  <p><b>Strengths:</b></p>
+  <ul>${data.t2Res.strengths.map(s => `<li>${escapeXml(s)}</li>`).join('')}</ul>
+  <p><b>Weaknesses:</b></p>
+  <ul>${data.t2Res.weaknesses.map(w => `<li>${escapeXml(w)}</li>`).join('')}</ul>
+  <p><b>Areas for Improvement:</b></p>
+  <ul>${data.t2Res.improvements.map(i => `<li>${escapeXml(i)}</li>`).join('')}</ul>
+
+  <h3>4. Model Answers (Band 9.0)</h3>
+  <p><b>Task 1 Model:</b></p>
+  <p>${escapeXml(MODEL_BAND9_TASK1).replace(/\n\n/g, '</p><p>')}</p>
+  <p><b>Task 2 Model:</b></p>
+  <p>${escapeXml(MODEL_BAND9_TASK2).replace(/\n\n/g, '</p><p>')}</p>
+</div>
+</body>
+</html>`;
+
+      const blob = new Blob([htmlDoc], { type: 'application/msword' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `IELTS_19_Writing_Test_1_Report_${data.candName.replace(/\s+/g, '_')}.doc`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // Initialize on load
+    window.addEventListener('DOMContentLoaded', () => {
+      initTimer();
+      // Restore drafts if present
+      try {
+        const d1 = localStorage.getItem('ielts19_t1_draft');
+        const d2 = localStorage.getItem('ielts19_t2_draft');
+        if (d1) { document.getElementById('t1-textarea').value = d1; }
+        if (d2) { document.getElementById('t2-textarea').value = d2; }
+      } catch (e) {}
+      updateCounts('t1');
+      updateCounts('t2');
+    });
+  </script>
+</body>
+</html>
